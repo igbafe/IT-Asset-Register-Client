@@ -40,3 +40,11 @@
 .read-the-docs {
   color: #888;
 }
+
+.sidebar-menu-button[data-active="true"] {
+  color: #4f46e5 !important;
+  background-color: #4f46e5/10;
+}
+.sidebar-menu-button[data-active="true"] svg {
+  color: #4f46e5;
+}

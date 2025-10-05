@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "./mode-toggle";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 // Menu items.
 const items = [
@@ -49,12 +49,24 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link to={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
+                  <NavLink to={item.url}>
+                    {({ isActive }) => (
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive}
+                        className={
+                          isActive
+                            ? "bg-[#4f46e5]/10 text-[#4f46e5] "
+                            : "hover:bg-[#4f46e5]/20"
+                        }
+                      >
+                        <div className="flex items-center gap-2">
+                          <item.icon className="h-4 w-4" />
+                          <span>{item.title}</span>
+                        </div>
+                      </SidebarMenuButton>
+                    )}
+                  </NavLink>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
