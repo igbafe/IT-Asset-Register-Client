@@ -15,7 +15,7 @@ export default function Assignments() {
           <header className="flex items-center justify-between  px-4 py-2 w-full">
             {/* Left side: trigger + title */}
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-semibold"> Laptop Assignments</h1>
+              <h1 className="text-2xl sm:text-4xl font-bold">  Assignments</h1>
             </div>
 
             {/* Right side: mode toggle + avatar */}

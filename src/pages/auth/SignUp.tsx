@@ -40,7 +40,7 @@ const SignUp = () => {
           <CardDescription>Fill in your details to register</CardDescription>
           <p className="text-sm mt-2">
             Already have an account?{" "}
-            <Link to="/login" className="text-blue-500 hover:underline">
+            <Link to="/login" className="text-[#4f46e5] hover:underline">
               Login
             </Link>
           </p>
@@ -84,7 +84,7 @@ const SignUp = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700 cursor-pointer"
                   >
                     {showPassword ? (
                       <EyeOff className="h-5 w-5" />
@@ -100,7 +100,7 @@ const SignUp = () => {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+              className="w-full bg-[#4f46e5] text-white hover:bg-[#4338ca] cursor-pointer"
             >
               {loading ? "Loading..." : "Sign Up"}
             </Button>

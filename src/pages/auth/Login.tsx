@@ -43,7 +43,7 @@ const Login = () => {
           </CardDescription>
           <p className="text-sm mt-2">
             Don’t have an account?{" "}
-            <Link to="/signup" className="text-blue-500 hover:underline">
+            <Link to="/signup" className="text-[#4f46e5] hover:underline">
               Sign Up
             </Link>
           </p>
@@ -67,7 +67,7 @@ const Login = () => {
                   <Label htmlFor="password">Password</Label>
                   <Link
                     to="/forgot-password"
-                    className="ml-auto text-sm text-blue-500 hover:underline"
+                    className="ml-auto text-sm text-[#4f46e5] hover:underline"
                   >
                     Forgot password?
                   </Link>
@@ -84,7 +84,7 @@ const Login = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700 cursor-pointer"
                   >
                     {showPassword ? (
                       <EyeOff className="h-5 w-5" />
@@ -100,7 +100,7 @@ const Login = () => {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+              className="w-full bg-[#4f46e5] text-white hover:bg-[#4338ca] cursor-pointer"
             >
               {loading ? "Loading..." : "Login"}
             </Button>
