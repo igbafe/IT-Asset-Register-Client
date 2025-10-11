@@ -2,26 +2,31 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { DataTable } from "@/components/table/data-table";
-import { columns, type Payment } from "@/components/table/columns";
+import { columns } from "@/components/table/columns";
+import { useLaptopDetailsStore } from "@/store/laptopDetailsStore";
+import { useEffect, useState } from "react";
 
 export default function Inventory() {
-  // Temporary test data
-  const data: Payment[] = [
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "123abc45",
-      amount: 250,
-      status: "success",
-      email: "test@example.com",
-    },
-  ];
+  const { laptops, fetchLaptops, loading } = useLaptopDetailsStore();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Fetch all laptops when component loads
+  useEffect(() => {
+    fetchLaptops();
+  }, [fetchLaptops]);
+
+  // Filter laptops by search term (case-insensitive)
+  const filteredLaptops = laptops.filter((laptop) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      laptop.systemName.toLowerCase().includes(term) ||
+      laptop.brand.toLowerCase().includes(term) ||
+      laptop.model.toLowerCase().includes(term) ||
+      laptop.serialNumber.toLowerCase().includes(term)
+    );
+  });
 
   return (
     <SidebarProvider>
@@ -32,7 +37,7 @@ export default function Inventory() {
         {/* Main content */}
         <div className="flex-1 flex flex-col">
           {/* Top bar */}
-          <header className="flex mb-5 justify-between w-full p-4 border-b">
+          <header className="flex mb-5 justify-between w-full sm:p-4 p-2 border-b">
             <h1 className="text-2xl sm:text-4xl font-bold">Inventory</h1>
 
             <div className="flex items-center gap-4">
@@ -46,18 +51,41 @@ export default function Inventory() {
 
           {/* Main body */}
           <main className="flex-1 flex flex-col gap-7 w-full p-4 overflow-y-auto">
-            <h2 className="text-xl sm:text-2xl font-semibold">
-              Complete Laptop Inventory
-            </h2>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <h2 className="text-xl sm:text-2xl font-semibold">
+                Complete Laptop Inventory
+              </h2>
 
-            <div>
-              <Button className="bg-[#4f46e5] hover:bg-[#4338ca] text-white text-base cursor-pointer flex items-center gap-2">
-                <Plus size={18} /> Add new Laptop
-              </Button>
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                {/* Search bar */}
+                <div className="relative flex-1 sm:w-64">
+                  <Search
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={18}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search laptops..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full border border-gray-300 dark:border-gray-700 rounded-md py-2 pl-9 pr-3 text-sm bg-transparent focus:ring-2 focus:ring-indigo-500 outline-none"
+                  />
+                </div>
 
-              <div className="mt-6">
-                <DataTable columns={columns} data={data} />
+                {/* Add button */}
+                <Button className="bg-[#4f46e5] hover:bg-[#4338ca] text-white text-base cursor-pointer flex items-center gap-2 whitespace-nowrap">
+                  <Plus size={18} /> Add new Laptop
+                </Button>
               </div>
+            </div>
+
+            {/* Table section */}
+            <div className="mt-6">
+              {loading ? (
+                <p className="text-center text-gray-500">Loading laptops...</p>
+              ) : (
+                <DataTable columns={columns} data={filteredLaptops} />
+              )}
             </div>
           </main>
         </div>

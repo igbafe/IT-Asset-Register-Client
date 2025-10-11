@@ -1,25 +1,51 @@
+import { type LaptopDetails } from "@/store/laptopDetailsStore";
 import { type ColumnDef } from "@tanstack/react-table";
+import { LaptopActionsCell } from "./laptopActionCell";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Payment = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
-
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<LaptopDetails>[] = [
+  {
+    accessorKey: "systemName",
+    header: "System Name",
+  },
+  {
+    accessorKey: "brand",
+    header: "Brand",
+  },
+  {
+    accessorKey: "model",
+    header: "Model",
+  },
+  {
+    accessorKey: "serialNumber",
+    header: "Serial Number",
+  },
+  {
+    accessorKey: "ram",
+    header: "RAM",
+  },
+  {
+    accessorKey: "rom",
+    header: "Storage",
+  },
+  {
+    accessorKey: "os",
+    header: "Operating System",
+  },
   {
     accessorKey: "status",
     header: "Status",
   },
   {
-    accessorKey: "email",
-    header: "Email",
-  },
-  {
-    accessorKey: "amount",
-    header: "Amount",
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      const laptop = row.original;
+      return (
+        <LaptopActionsCell
+          serialNumber={laptop.serialNumber}
+          systemName={laptop.systemName}
+        />
+      );
+    },
   },
 ];
