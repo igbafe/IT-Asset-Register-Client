@@ -6,16 +6,19 @@ import SignUp from "./pages/auth/SignUp";
 import LaptopDashboard from "./pages/Dashboard";
 import Inventory from "./pages/Inventory";
 import Assignments from "./pages/Assignment";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
     <div>
+      <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboard" element={<LaptopDashboard />} />
-         <Route path="/inventory" element={<Inventory />} />
-          <Route path="/assignments" element={<Assignments />} />
+        <Route path="/inventory" element={<Inventory />} />
+        <Route path="/assignments" element={<Assignments />} />
         <Route path="/passkeyModal" element={<PasskeyModal />} />
       </Routes>
     </div>

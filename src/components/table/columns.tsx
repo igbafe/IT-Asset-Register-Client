@@ -1,6 +1,7 @@
 import { type LaptopDetails } from "@/store/laptopDetailsStore";
 import { type ColumnDef } from "@tanstack/react-table";
 import { LaptopActionsCell } from "./laptopActionCell";
+import { LaptopStatusBadge } from "./laptopStatusBadge";
 
 export const columns: ColumnDef<LaptopDetails>[] = [
   {
@@ -34,6 +35,7 @@ export const columns: ColumnDef<LaptopDetails>[] = [
   {
     accessorKey: "status",
     header: "Status",
+    cell: ({ row }) => <LaptopStatusBadge status={row.getValue("status")} />,
   },
   {
     id: "actions",

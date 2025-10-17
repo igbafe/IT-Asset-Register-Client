@@ -1,6 +1,6 @@
 import axios from "axios";
-import Swal from "sweetalert2";
 import { create } from "zustand";
+import { toast } from "react-toastify";
 
 export interface LaptopDetails {
   _id?: string;
@@ -21,6 +21,10 @@ export interface LaptopDetails {
   updatedAt?: string;
 }
 
+interface Result {
+  success: boolean;
+}
+
 interface LaptopStore {
   laptops: LaptopDetails[];
   selectedLaptop: LaptopDetails | null;
@@ -30,7 +34,7 @@ interface LaptopStore {
   // Actions
   fetchLaptops: () => Promise<void>;
   getLaptopBySerial: (serialNumber: string) => Promise<void>;
-  addLaptop: (data: Omit<LaptopDetails, "_id">) => Promise<void>;
+  addLaptop: (data: Omit<LaptopDetails, "_id">) => Promise<Result>;
   updateLaptop: (
     serialNumber: string,
     updates: Partial<LaptopDetails>
@@ -53,7 +57,7 @@ export const useLaptopDetailsStore = create<LaptopStore>((set) => ({
       const res = await axios.get(`${url}/api/laptopDetails`);
       set({ laptops: res.data.data, loading: false });
     } catch (error: unknown) {
-      set({ loading: false }); // stop loading early in catch
+      set({ loading: false });
 
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
@@ -64,30 +68,25 @@ export const useLaptopDetailsStore = create<LaptopStore>((set) => ({
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
               : zodErrors[0].message || "Validation failed";
-          Swal.fire("Validation Error", firstError, "error");
+          toast.error(`Validation Error: ${firstError}`);
         } else {
-          Swal.fire(
-            "Error",
-            backendMessage || "Failed to fetch laptops",
-            "error"
-          );
+          toast.error(backendMessage || "Failed to fetch laptops");
         }
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred");
       }
-      if (error instanceof Error) {
-        Swal.fire("Error", error.message, "error");
-      }
-
-      Swal.fire("Error", "An unexpected error occurred", "error");
     }
   },
 
   getLaptopBySerial: async (serialNumber) => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.get(`/api/laptopDetails/${serialNumber}`);
+      const res = await axios.get(`${url}/api/laptopDetails/${serialNumber}`);
       set({ selectedLaptop: res.data.laptop, loading: false });
     } catch (error: unknown) {
-      set({ loading: false }); // stop loading early in catch
+      set({ loading: false });
 
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
@@ -98,33 +97,32 @@ export const useLaptopDetailsStore = create<LaptopStore>((set) => ({
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
               : zodErrors[0].message || "Validation failed";
-          Swal.fire("Validation Error", firstError, "error");
+          toast.error(`Validation Error: ${firstError}`);
         } else {
-          Swal.fire(
-            "Error",
-            backendMessage || "Failed to fetch laptop using serial number ",
-            "error"
+          toast.error(
+            backendMessage || "Failed to fetch laptop using serial number"
           );
         }
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred");
       }
-      if (error instanceof Error) {
-        Swal.fire("Error", error.message, "error");
-      }
-
-      Swal.fire("Error", "An unexpected error occurred", "error");
     }
   },
 
   addLaptop: async (data) => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.post("/api/laptopDetails", data);
+      const res = await axios.post(`${url}/api/laptopDetails`, data);
       set((state) => ({
         laptops: [...state.laptops, res.data.laptop],
         loading: false,
       }));
+      toast.success("Laptop added successfully!");
+      return { success: true };
     } catch (error: unknown) {
-      set({ loading: false }); // stop loading early in catch
+      set({ loading: false });
 
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
@@ -135,35 +133,35 @@ export const useLaptopDetailsStore = create<LaptopStore>((set) => ({
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
               : zodErrors[0].message || "Validation failed";
-          Swal.fire("Validation Error", firstError, "error");
+          toast.error(`Validation Error: ${firstError}`);
         } else {
-          Swal.fire(
-            "Error",
-            backendMessage || "Failed to add laptops",
-            "error"
-          );
+          toast.error(backendMessage || "Failed to add laptop");
         }
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred");
       }
-      if (error instanceof Error) {
-        Swal.fire("Error", error.message, "error");
-      }
-
-      Swal.fire("Error", "An unexpected error occurred", "error");
+      return { success: false };
     }
   },
 
   updateLaptop: async (serialNumber, updates) => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.put(`/api/laptopDetails/${serialNumber}`, updates);
+      const res = await axios.put(
+        `${url}/api/laptopDetails/${serialNumber}`,
+        updates
+      );
       set((state) => ({
         laptops: state.laptops.map((l) =>
           l.serialNumber === serialNumber ? res.data.laptop : l
         ),
         loading: false,
       }));
-    }catch (error: unknown) {
-      set({ loading: false }); // stop loading early in catch
+      toast.success("Laptop updated successfully!");
+    } catch (error: unknown) {
+      set({ loading: false });
 
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
@@ -174,35 +172,33 @@ export const useLaptopDetailsStore = create<LaptopStore>((set) => ({
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
               : zodErrors[0].message || "Validation failed";
-          Swal.fire("Validation Error", firstError, "error");
+          toast.error(`Validation Error: ${firstError}`);
         } else {
-          Swal.fire(
-            "Error",
-            backendMessage || "Failed to update laptops",
-            "error"
-          );
+          toast.error(backendMessage || "Failed to update laptop");
         }
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred");
       }
-      if (error instanceof Error) {
-        Swal.fire("Error", error.message, "error");
-      }
-
-      Swal.fire("Error", "An unexpected error occurred", "error");
     }
   },
 
   retireLaptop: async (serialNumber) => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.patch(`/api/laptopDetails/retire/${serialNumber}`);
+      const res = await axios.put(
+        `${url}/api/laptopDetails/retire/${serialNumber}`
+      );
       set((state) => ({
         laptops: state.laptops.map((l) =>
           l.serialNumber === serialNumber ? res.data.laptop : l
         ),
         loading: false,
       }));
+      toast.success("Laptop retired successfully!");
     } catch (error: unknown) {
-      set({ loading: false }); // stop loading early in catch
+      set({ loading: false });
 
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
@@ -213,20 +209,15 @@ export const useLaptopDetailsStore = create<LaptopStore>((set) => ({
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
               : zodErrors[0].message || "Validation failed";
-          Swal.fire("Validation Error", firstError, "error");
+          toast.error(`Validation Error: ${firstError}`);
         } else {
-          Swal.fire(
-            "Error",
-            backendMessage || "Failed to retire laptops",
-            "error"
-          );
+          toast.error(backendMessage || "Failed to retire laptop");
         }
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred");
       }
-      if (error instanceof Error) {
-        Swal.fire("Error", error.message, "error");
-      }
-
-      Swal.fire("Error", "An unexpected error occurred", "error");
     }
   },
 

@@ -59,7 +59,7 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} className="even:bg-gray-50/50">
+                <TableRow key={row.id}  className="border-b border-gray-100 dark:border-gray-800 even:bg-gray-50/50 dark:even:bg-gray-800/30">
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}

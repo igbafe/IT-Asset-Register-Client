@@ -1,3 +1,8 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,25 +15,28 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/authStore";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { signupSchema, type SignupFormData } from "@/validation/validation";
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const { register, loading } = useAuthStore();
+  const { register: registerUser, loading } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const result = await register(name, email, password);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+  });
+
+  const onSubmit = async (data: SignupFormData) => {
+    const result = await registerUser(data.name, data.email, data.password);
     if (result.success) {
-      navigate("/passkeyModal"); // ✅ only navigate if registration worked
+      navigate("/passkeyModal");
     }
-  }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
       <Card className="w-full max-w-sm">
@@ -45,7 +53,8 @@ const SignUp = () => {
             </Link>
           </p>
         </CardHeader>
-        <form onSubmit={onSubmit} className="flex flex-col gap-6">
+
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
           <CardContent>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
@@ -54,32 +63,34 @@ const SignUp = () => {
                   id="name"
                   type="text"
                   placeholder="John Doe"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
+                  {...register("name")}
                 />
+                {errors.name && (
+                  <p className="text-red-500 text-sm">{errors.name.message}</p>
+                )}
               </div>
+
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="m@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
+                  {...register("email")}
                 />
+                {errors.email && (
+                  <p className="text-red-500 text-sm">{errors.email.message}</p>
+                )}
               </div>
+
               <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
-                    value={password}
                     type={showPassword ? "text" : "password"}
-                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="Your password"
-                    required
+                    {...register("password")}
                   />
                   <button
                     type="button"
@@ -93,14 +104,20 @@ const SignUp = () => {
                     )}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="text-red-500 text-sm">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
             </div>
           </CardContent>
+
           <CardFooter className="flex-col gap-2">
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#4f46e5] text-white hover:bg-[#4338ca] cursor-pointer"
+              className="w-full bg-[#4f46e5] text-white hover:bg-[#4338ca]"
             >
               {loading ? "Loading..." : "Sign Up"}
             </Button>

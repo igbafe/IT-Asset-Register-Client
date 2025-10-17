@@ -1,3 +1,8 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,22 +15,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/authStore";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { loginSchema, type LoginFormData } from "@/validation/validation";
 
 const Login = () => {
   const { login, loading } = useAuthStore();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    login(email, password);
+  // ✅ Setup form validation with Zod
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
 
-    if (useAuthStore.getState().token) {
+  const onSubmit = async (data: LoginFormData) => {
+    const result = await login(data.email, data.password);
+    if (result.success) {
       navigate("/dashboard");
     }
   };
@@ -48,20 +56,25 @@ const Login = () => {
             </Link>
           </p>
         </CardHeader>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
           <CardContent>
             <div className="flex flex-col gap-6">
+              {/* Email */}
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="m@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
+                  {...register("email")}
                 />
+                {errors.email && (
+                  <p className="text-red-500 text-sm">{errors.email.message}</p>
+                )}
               </div>
+
+              {/* Password */}
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
@@ -75,11 +88,9 @@ const Login = () => {
                 <div className="relative">
                   <Input
                     id="password"
-                    value={password}
                     type={showPassword ? "text" : "password"}
-                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="Your password"
-                    required
+                    {...register("password")}
                   />
                   <button
                     type="button"
@@ -93,14 +104,20 @@ const Login = () => {
                     )}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="text-red-500 text-sm">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
             </div>
           </CardContent>
+
           <CardFooter className="flex-col gap-2">
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#4f46e5] text-white hover:bg-[#4338ca] cursor-pointer"
+              className="w-full bg-[#4f46e5] text-white hover:bg-[#4338ca]"
             >
               {loading ? "Loading..." : "Login"}
             </Button>
