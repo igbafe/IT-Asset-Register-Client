@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
-import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 interface User {
   _id: string;
@@ -23,7 +23,7 @@ interface AuthState {
     password: string
   ) => Promise<AuthResult>;
   verifyOtp: (email: string, otp: string) => Promise<void>;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<AuthResult>;
   resendOtp: (email: string) => Promise<void>;
   logout: () => void;
 }
@@ -44,7 +44,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         password,
       });
       set({ user: { _id: "", name, email, isVerified: false } });
-      Swal.fire("Success", response.data.message, "success");
+      toast.success(response.data.message || "Registration successful");
       return { success: true };
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -56,14 +56,14 @@ export const useAuthStore = create<AuthState>((set) => ({
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
               : zodErrors[0].message;
-          Swal.fire("Validation Error", firstError, "error");
+          toast.error(firstError || "Validation error");
         } else {
-          Swal.fire("Error", backendMessage || "Registration failed", "error");
+          toast.error(backendMessage || "Registration failed");
         }
       } else if (error instanceof Error) {
-        Swal.fire("Error", error.message, "error");
+        toast.error(error.message);
       } else {
-        Swal.fire("Error", "An unexpected error occurred", "error");
+        toast.error("An unexpected error occurred");
       }
       return { success: false };
     } finally {
@@ -80,23 +80,24 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
       set({ user: res.data.user, token: res.data.token });
       localStorage.setItem("token", res.data.token);
-      Swal.fire("Success", res.data.message, "success");
+      toast.success(res.data.message || "Login successful");
+      return { success: true };
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
         const zodErrors = error.response?.data?.errors;
 
         if (zodErrors && Array.isArray(zodErrors)) {
-          // Display first field error (you could also join them)
-          Swal.fire("Validation Error", zodErrors[0].message, "error");
+          toast.error(zodErrors[0].message || "Validation error");
         } else {
-          Swal.fire("Error", backendMessage || "Login failed", "error");
+          toast.error(backendMessage || "Login failed");
         }
       } else if (error instanceof Error) {
-        Swal.fire("Error", error.message, "error");
+        toast.error(error.message);
       } else {
-        Swal.fire("Error", "An unexpected error occurred", "error");
+        toast.error("An unexpected error occurred");
       }
+      return { success: false };
     } finally {
       set({ loading: false });
     }
@@ -111,26 +112,21 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
       set({ user: res.data.user, token: res.data.token });
       localStorage.setItem("token", res.data.token);
-      Swal.fire("Success", res.data.message, "success");
+      toast.success(res.data.message || "OTP verified successfully");
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
         const zodErrors = error.response?.data?.errors;
 
         if (zodErrors && Array.isArray(zodErrors)) {
-          // Display first field error (you could also join them)
-          Swal.fire("Validation Error", zodErrors[0].message, "error");
+          toast.error(zodErrors[0].message || "Validation error");
         } else {
-          Swal.fire(
-            "Error",
-            backendMessage || "OTP verification failed",
-            "error"
-          );
+          toast.error(backendMessage || "OTP verification failed");
         }
       } else if (error instanceof Error) {
-        Swal.fire("Error", error.message, "error");
+        toast.error(error.message);
       } else {
-        Swal.fire("Error", "An unexpected error occurred", "error");
+        toast.error("An unexpected error occurred");
       }
     } finally {
       set({ loading: false });
@@ -141,15 +137,15 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ loading: true });
     try {
       await axios.post(`${url}/api/user/resend-otp`, { email });
-      Swal.fire("Success", "OTP resent to your email", "success");
+      toast.success("OTP resent to your email");
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
-        Swal.fire("Error", backendMessage || "Failed to resend OTP", "error");
+        toast.error(backendMessage || "Failed to resend OTP");
       } else if (error instanceof Error) {
-        Swal.fire("Error", error.message, "error");
+        toast.error(error.message);
       } else {
-        Swal.fire("Error", "An unexpected error occurred", "error");
+        toast.error("An unexpected error occurred");
       }
     } finally {
       set({ loading: false });
@@ -159,6 +155,6 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => {
     set({ user: null, token: null });
     localStorage.removeItem("token");
-    Swal.fire("Success", "Logged out successfully", "success");
+    toast.success("Logged out successfully");
   },
 }));
