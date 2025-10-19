@@ -41,13 +41,7 @@ export const columns: ColumnDef<LaptopDetails>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const laptop = row.original;
-      return (
-        <LaptopActionsCell
-          serialNumber={laptop.serialNumber}
-          systemName={laptop.systemName}
-        />
-      );
+      return <LaptopActionsCell laptop={row.original} />;
     },
   },
 ];

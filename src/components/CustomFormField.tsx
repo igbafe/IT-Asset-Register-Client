@@ -10,6 +10,7 @@ import { Input } from "./ui/input";
 import DatePicker from "react-datepicker";
 import { FormFieldType } from "@/validation/validation";
 import "react-datepicker/dist/react-datepicker.css";
+import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
 
 interface CustomFormField {
   control: Control<any>;
@@ -62,6 +63,26 @@ const RenderField = ({
             />
           </FormControl>
         </div>
+      );
+    case FormFieldType.SELECT:
+      return (
+        <FormControl>
+          <Select
+            onValueChange={field.onChange}
+            value={field.value} 
+          >
+            <SelectTrigger className="h-11 w-full bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-gray-900 dark:text-gray-100">
+              <SelectValue placeholder={placeholder} />
+            </SelectTrigger>
+            <SelectContent
+              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50 max-h-[300px] overflow-y-auto"
+              position="popper"
+              sideOffset={5}
+            >
+              {props.children}
+            </SelectContent>
+          </Select>
+        </FormControl>
       );
     case FormFieldType.SKELETON:
       return renderSkeleton ? renderSkeleton(field) : null;

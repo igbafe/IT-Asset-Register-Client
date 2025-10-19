@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import AddForm from "@/components/form/AddForm";
 
 export default function Inventory() {
-  const { laptops, fetchLaptops, loading } = useLaptopDetailsStore();
+  const { laptops, fetchLaptops } = useLaptopDetailsStore();
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch all laptops when component loads
@@ -76,11 +76,7 @@ export default function Inventory() {
             </div>
 
             <div className="mt-6">
-              {loading ? (
-                <p className="text-center text-gray-500">Loading laptops...</p>
-              ) : (
-                <DataTable columns={columns} data={filteredLaptops} />
-              )}
+              <DataTable columns={columns} data={filteredLaptops} />
             </div>
           </main>
         </div>

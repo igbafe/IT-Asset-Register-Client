@@ -49,24 +49,17 @@ export const UpdateDetailsSchema = z.object({
   systemName: z
     .string()
     .min(2, "System name must be at least 2 characters long")
-    .optional(),
-  brand: z.string().min(1, "Brand is required").optional(),
-  model: z.string().min(1, "Model is required").optional(),
+    .or(z.literal("")),
+  brand: z.string().min(1, "Brand is required").or(z.literal("")),
+  model: z.string().min(1, "Model is required").or(z.literal("")),
   serialNumber: z
     .string()
-    .min(3, "Serial number must be at least 3 characters long")
-    .optional(),
-  ram: z.string().min(1, "RAM field is required").optional(),
-  rom: z.string().min(1, "ROM field is required").optional(),
-  os: z.string().min(1, "Operating system is required").optional(),
+    .min(3, "Serial number must be at least 3 characters long"),
+  ram: z.string().min(1, "RAM field is required").or(z.literal("")),
+  rom: z.string().min(1, "ROM field is required").or(z.literal("")),
+  os: z.string().min(1, "Operating system is required").or(z.literal("")),
   status: z
-    .enum([
-      "Available",
-      "In Use",
-      "Retired",
-      "In Repair",
-      "Fully Depreciated",
-    ])
+    .enum(["Available", "In Use", "Retired", "In Repair", "Fully Depreciated"])
     .optional(),
 });
 
