@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/authStore";
-import { loginSchema, type LoginFormData } from "@/validation/validation";
+import { loginSchema, type LoginFormData } from "@/validation/laptopDetailsvalidation";
 
 const Login = () => {
   const { login, loading } = useAuthStore();

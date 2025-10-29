@@ -1,10 +1,8 @@
-"use client";
-
 import { useLaptopDetailsStore } from "@/store/laptopDetailsStore";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import Swal from "sweetalert2";
-import UpdateForm from "../form/UpdateForm";
+import UpdateForm from "@/components/form/laptopdetails/UpdateForm";
 
 interface LaptopActionsCellProps {
   laptop: {
@@ -49,10 +47,8 @@ export function LaptopActionsCell({ laptop }: LaptopActionsCellProps) {
 
   return (
     <div className="flex items-center gap-3">
-      {/* Edit Button - Pass full laptop object */}
       <UpdateForm laptop={laptop} />
 
-      {/* Retire Button */}
       <Button
         variant="destructive"
         size="sm"

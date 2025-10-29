@@ -3,10 +3,10 @@ import { AppSidebar } from "@/components/Sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search } from "lucide-react";
 import { DataTable } from "@/components/table/data-table";
-import { columns } from "@/components/table/columns";
+import { columns } from "@/components/table/laptopDetails/laptopColumns";
 import { useLaptopDetailsStore } from "@/store/laptopDetailsStore";
 import { useEffect, useState } from "react";
-import AddForm from "@/components/form/AddForm";
+import AddForm from "@/components/form/laptopdetails/AddForm";
 
 export default function Inventory() {
   const { laptops, fetchLaptops } = useLaptopDetailsStore();

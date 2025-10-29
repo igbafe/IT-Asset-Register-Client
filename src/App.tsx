@@ -8,6 +8,7 @@ import Inventory from "./pages/Inventory";
 import Assignments from "./pages/Assignment";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import LaptopAssignmentDetails from "./pages/AssignmentDetails";
 
 function App() {
   return (
@@ -20,6 +21,10 @@ function App() {
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/assignments" element={<Assignments />} />
         <Route path="/passkeyModal" element={<PasskeyModal />} />
+        <Route
+          path="/assignments/:serialNumber"
+          element={<LaptopAssignmentDetails />}
+        />
       </Routes>
     </div>
   );
