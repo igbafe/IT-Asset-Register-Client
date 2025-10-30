@@ -8,9 +8,10 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import DatePicker from "react-datepicker";
-import { FormFieldType } from "@/validation/validation";
+import { FormFieldType } from "@/validation/laptopDetailsvalidation";
 import "react-datepicker/dist/react-datepicker.css";
 import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
+import { Calendar } from "lucide-react";
 
 interface CustomFormField {
   control: Control<any>;
@@ -49,28 +50,38 @@ const RenderField = ({
       );
     case FormFieldType.DATE_PICKER:
       return (
-        <div className="flex rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all overflow-hidden">
-          <FormControl>
-            <DatePicker
-              selected={field.value}
-              onChange={(date) => field.onChange(date)}
-              dateFormat={dateFormat ?? "MM/dd/yyyy"}
-              showTimeSelect={showTimeSelect ?? false}
-              timeInputLabel="Time:"
-              wrapperClassName="date-picker w-full"
-              className="w-full h-11 px-3 bg-transparent border-0 outline-none text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
-              calendarClassName="custom-calendar"
-            />
-          </FormControl>
+        <div className="relative w-full">
+          <div
+            className="flex items-center gap-3 rounded-xl border border-gray-300 dark:border-gray-700 
+        bg-white dark:bg-gray-900 px-3 py-2 transition-all 
+        focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20"
+          >
+            {/* Calendar Icon */}
+            <Calendar className="h-5 w-5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+
+            {/* Date Picker Field */}
+            <FormControl>
+              <DatePicker
+                selected={field.value}
+                onChange={(date) => field.onChange(date)}
+                dateFormat={dateFormat ?? "MM/dd/yyyy"}
+                showTimeSelect={showTimeSelect ?? false}
+                timeInputLabel="Time:"
+                wrapperClassName="w-full"
+                className="w-full bg-transparent text-gray-900 dark:text-gray-100 
+              placeholder:text-gray-400 dark:placeholder:text-gray-500 
+              focus:outline-none cursor-pointer"
+                calendarClassName="rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 scale-105"
+                popperClassName="z-50"
+              />
+            </FormControl>
+          </div>
         </div>
       );
     case FormFieldType.SELECT:
       return (
         <FormControl>
-          <Select
-            onValueChange={field.onChange}
-            value={field.value} 
-          >
+          <Select onValueChange={field.onChange} value={field.value}>
             <SelectTrigger className="h-11 w-full bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-gray-900 dark:text-gray-100">
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>

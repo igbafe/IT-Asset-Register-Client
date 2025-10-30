@@ -1,9 +1,9 @@
 import { useLaptopDetailsStore } from "@/store/laptopDetailsStore";
 import {
   FormFieldType,
-  laptopDetailsSchema,
-  type LaptopDetailsFormData,
-} from "@/validation/validation";
+  UpdateDetailsSchema,
+  type UpdateDetailsFormData,
+} from "@/validation/laptopDetailsvalidation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -16,51 +16,86 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "../ui/button";
-import { Form } from "../ui/form";
-import CustomFormField from "../CustomFormField";
-import LoadingOverlay from "../LoadingOverlay";
-import { SelectItem } from "../ui/select";
+import { useState } from "react";
+import LoadingOverlay from "@/components/LoadingOverlay";
+import { Button } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
+import { Form } from "@/components/ui/form";
+import CustomFormField from "@/components/CustomFormField";
+import { SelectItem } from "@/components/ui/select";
 
-const AddForm = () => {
-  const { addLaptop, loading } = useLaptopDetailsStore();
+interface UpdateFormProps {
+  laptop: {
+    systemName: string;
+    brand: string;
+    model: string;
+    serialNumber: string;
+    ram: string;
+    rom: string;
+    os: string;
+    status?:
+      | "Available"
+      | "In Use"
+      | "Retired"
+      | "In Repair"
+      | "Fully Depreciated";
+  };
+}
 
-  const form = useForm<LaptopDetailsFormData>({
-    resolver: zodResolver(laptopDetailsSchema),
+const UpdateForm = ({ laptop }: UpdateFormProps) => {
+  const { loading, updateLaptop } = useLaptopDetailsStore();
+  const [open, setOpen] = useState(false);
+
+  const form = useForm<UpdateDetailsFormData>({
+    resolver: zodResolver(UpdateDetailsSchema),
     defaultValues: {
-      systemName: "",
-      brand: "",
-      model: "",
-      serialNumber: "",
-      ram: "",
-      rom: "",
-      os: "",
-      status: "Available",
+      systemName: laptop.systemName,
+      brand: laptop.brand,
+      model: laptop.model,
+      serialNumber: laptop.serialNumber,
+      ram: laptop.ram,
+      rom: laptop.rom,
+      os: laptop.os,
+      status: laptop.status || "Available",
     },
   });
 
-  const onSubmit = async (values: LaptopDetailsFormData) => {
-    const result = await addLaptop(values);
-    if (result.success) {
+  const onSubmit = async (values: UpdateDetailsFormData) => {
+    const { serialNumber, ...updates } = values;
+    if (!serialNumber) {
+      console.error("serialNumber is required to update laptop");
+      return;
+    }
+    try {
+      await updateLaptop(serialNumber, updates);
       form.reset();
+      setOpen(false);
+    } catch (error) {
+      console.error("Failed to update laptop:", error);
     }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       {loading && <LoadingOverlay />}
       <DialogTrigger asChild>
-        <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
-          Add Laptop
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950 flex items-center gap-1.5"
+        >
+          <Pencil size={14} />
+          Edit
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col p-0">
         <DialogHeader className="px-6 pt-6 pb-4 border-b">
-          <DialogTitle className="text-2xl font-semibold">
-            Add New Laptop
+          <DialogTitle className="text-2xl font-semibold flex items-center gap-2">
+            <Pencil className="h-5 w-5 text-emerald-600" />
+            Update Laptop Details
           </DialogTitle>
           <DialogDescription className="text-gray-600 dark:text-gray-400">
-            Fill in the required laptop details below.
+            Modify the laptop information below.
           </DialogDescription>
         </DialogHeader>
 
@@ -94,13 +129,14 @@ const AddForm = () => {
                 />
               </div>
 
-              {/* Serial Number - Full Width */}
+              {/* Serial Number - Full Width (Disabled for updates) */}
               <CustomFormField
                 fieldType={FormFieldType.INPUT}
                 control={form.control}
                 name="serialNumber"
                 label="Serial Number"
                 placeholder="SN12345678"
+                disabled={true}
               />
 
               {/* RAM and ROM - Side by Side */}
@@ -186,9 +222,10 @@ const AddForm = () => {
             <Button
               type="submit"
               onClick={form.handleSubmit(onSubmit)}
-              className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white"
+              className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white"
             >
-              Save Laptop
+              <Pencil className="h-4 w-4 mr-2" />
+              Update Laptop
             </Button>
           </div>
         </DialogFooter>
@@ -197,4 +234,4 @@ const AddForm = () => {
   );
 };
 
-export default AddForm;
+export default UpdateForm;

@@ -1,5 +1,4 @@
-import { HardDrive, LayoutDashboard, MonitorCog, UserPen } from "lucide-react";
-
+import { HardDrive, LayoutDashboard, LogOut, MonitorCog, UserPen } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +11,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "./mode-toggle";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
 
 // Menu items.
 const items = [
@@ -34,12 +34,19 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const { logout } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
+
   return (
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
           <SidebarHeader>
-            {" "}
             <div className="flex items-center space-x-2">
               <MonitorCog />
               <p>Asset Manager</p>
@@ -56,7 +63,7 @@ export function AppSidebar() {
                         isActive={isActive}
                         className={
                           isActive
-                            ? "bg-[#4f46e5]/10 text-[#4f46e5] "
+                            ? "bg-[#4f46e5]/10 text-[#4f46e5]"
                             : "hover:bg-[#4f46e5]/20"
                         }
                       >
@@ -73,8 +80,15 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t">
+      <SidebarFooter className="border-t p-4 space-y-2">
         <ModeToggle />
+        <SidebarMenuButton
+          onClick={handleLogout}
+          className="w-full hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400"
+        >
+          <LogOut className="h-4 w-4" />
+          <span>Logout</span>
+        </SidebarMenuButton>
       </SidebarFooter>
     </Sidebar>
   );

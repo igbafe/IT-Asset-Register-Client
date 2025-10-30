@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/authStore";
-import { signupSchema, type SignupFormData } from "@/validation/validation";
+import { signupSchema, type SignupFormData } from "@/validation/laptopDetailsvalidation";
 
 const SignUp = () => {
   const navigate = useNavigate();

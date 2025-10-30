@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { create } from "zustand";
 
 export interface Assignment {
-  _id?: string;
+  _id: string;
   systemName: string;
   serialNumber: string;
   fullName: string;
@@ -12,6 +12,8 @@ export interface Assignment {
   assignedDate: Date;
   returnedDate?: Date;
   status: "Active" | "Returned" | "Retired";
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface Result {
@@ -28,10 +30,10 @@ interface AssignmentStore {
   getAssignmentBySerialNumber: (
     serialNumber: string
   ) => Promise<Assignment[] | null>;
-  assignLaptop: (data: Omit<Assignment, "_id" | "status">) => Promise<Result>;
+  assignLaptop: (data: Omit<Assignment, "_id" | "status" | "createdAt"| "updatedAt">) => Promise<Result>;
   reassignLaptop: (
-    systemName: string,
-    data: Omit<Assignment, "_id" | "status">
+    serialNumber: string,
+    data:  Omit<Assignment, "_id" | "status" | "createdAt"| "updatedAt">
   ) => Promise<Result>;
   updateLaptop: (_id: string, updates: Partial<Assignment>) => Promise<void>;
   retireAssignment: (systemName: string) => Promise<void>;
@@ -139,11 +141,11 @@ export const useAssignmentStore = create<AssignmentStore>((set) => ({
       return { success: false };
     }
   },
-  
-  reassignLaptop: async (systemName, data) => {
+
+  reassignLaptop: async (serialNumber, data) => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.put(`${url}/reassign/${systemName}`, data);
+      const res = await axios.post(`${url}/reassign/${serialNumber}`, data);
       set((state) => ({
         assignments: [...state.assignments, res.data.newAssignment],
         loading: false,
