@@ -1,12 +1,12 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search } from "lucide-react";
 import { DataTable } from "@/components/table/data-table";
 import { columns } from "@/components/table/laptopDetails/laptopColumns";
 import { useLaptopDetailsStore } from "@/store/laptopDetailsStore";
 import { useEffect, useState } from "react";
 import AddForm from "@/components/form/laptopdetails/AddForm";
+import { UserAvatar } from "@/components/Avatar";
 
 export default function Inventory() {
   const { laptops, fetchLaptops } = useLaptopDetailsStore();
@@ -41,10 +41,7 @@ export default function Inventory() {
 
             <div className="flex items-center gap-4">
               <SidebarTrigger />
-              <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" alt="@user" />
-                <AvatarFallback>PI</AvatarFallback>
-              </Avatar>
+              <UserAvatar />
             </div>
           </header>
 

@@ -1,6 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 
 import { DataTable } from "@/components/table/data-table";
 import { Search } from "lucide-react";
@@ -9,6 +9,7 @@ import { useAssignmentStore } from "@/store/assignmentStore";
 import { useEffect, useState } from "react";
 import AssignForm from "@/components/form/assignment/AssignForm";
 import { assignmentColumns } from "@/components/table/assignments/AssignmentColumns";
+import { UserAvatar } from "@/components/Avatar";
 
 
 export default function Assignments() {
@@ -36,15 +37,12 @@ export default function Assignments() {
         <div className="flex-1 flex flex-col min-w-0">
           <header className="flex mb-5 justify-between w-full sm:p-4 p-3 border-b dark:border-gray-800 bg-white dark:bg-gray-900 sticky top-0 z-10">
             <h1 className="text-2xl sm:text-4xl font-bold truncate pr-4">
-              Inventory
+              Assignments
             </h1>
 
             <div className="flex items-center gap-4">
               <SidebarTrigger />
-              <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" alt="@user" />
-                <AvatarFallback>PI</AvatarFallback>
-              </Avatar>
+              <UserAvatar />
             </div>
           </header>
 
