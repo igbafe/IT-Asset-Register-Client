@@ -39,7 +39,7 @@ interface AssignmentStore {
   retireAssignment: (systemName: string) => Promise<void>;
 }
 
-const url = "http://localhost:5000/api/laptopAssignment";
+const url = "https://it-asset-register-server.onrender.com/api/laptopAssignment";
 
 export const useAssignmentStore = create<AssignmentStore>((set) => ({
   assignments: [],

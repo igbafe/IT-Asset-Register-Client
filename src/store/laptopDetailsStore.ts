@@ -43,7 +43,7 @@ interface LaptopStore {
   setSelectedLaptop: (laptop: LaptopDetails | null) => void;
 }
 
-const url = "http://localhost:5000";
+const url = "https://it-asset-register-server.onrender.com";
 
 export const useLaptopDetailsStore = create<LaptopStore>((set) => ({
   laptops: [],

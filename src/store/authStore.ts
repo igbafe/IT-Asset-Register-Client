@@ -30,7 +30,7 @@ interface AuthState {
   logout: () => void;
 }
 
-const url = "http://localhost:5000";
+const url = "https://it-asset-register-server.onrender.com";
 
 export const useAuthStore = create<AuthState>()(
   persist(
