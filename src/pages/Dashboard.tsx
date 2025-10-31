@@ -42,7 +42,7 @@ export default function LaptopDashboard() {
     .slice(0, 5);
 
   // Get time ago helper
-  const getTimeAgo = (date: string) => {
+  const getTimeAgo = (date: string | Date) => {
     const now = new Date();
     const past = new Date(date);
     const diffInMs = now.getTime() - past.getTime();

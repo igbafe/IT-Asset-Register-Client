@@ -50,9 +50,9 @@ export default function LaptopAssignmentDetails() {
       }
 
       const assignments: Assignment[] = Array.isArray(data)
-        ? data
-        : Array.isArray((data as any).assignments)
-        ? (data as any).assignments
+        ? (data as Assignment[])
+        : typeof data === "object" && data !== null && Array.isArray((data as { assignments?: unknown }).assignments)
+        ? ((data as { assignments?: Assignment[] }).assignments as Assignment[])
         : [];
 
       // normalize to null when not found (avoids undefined)
