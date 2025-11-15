@@ -1,4 +1,4 @@
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/store/useAuthStore";
 
 import { Avatar, AvatarFallback } from "./ui/avatar";
 
