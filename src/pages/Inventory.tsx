@@ -3,13 +3,13 @@ import { AppSidebar } from "@/components/Sidebar";
 import { Search } from "lucide-react";
 import { DataTable } from "@/components/table/data-table";
 import { columns } from "@/components/table/laptopDetails/laptopColumns";
-import { useLaptopDetailsStore } from "@/store/laptopDetailsStore";
+import {  useLaptopStore } from "@/store/useLaptopStore";
 import { useEffect, useState } from "react";
 import AddForm from "@/components/form/laptopdetails/AddForm";
 import { UserAvatar } from "@/components/Avatar";
 
 export default function Inventory() {
-  const { laptops, fetchLaptops } = useLaptopDetailsStore();
+  const { laptops, fetchLaptops } = useLaptopStore();
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch all laptops when component loads

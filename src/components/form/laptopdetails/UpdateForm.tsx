@@ -1,4 +1,4 @@
-import { useLaptopDetailsStore } from "@/store/laptopDetailsStore";
+import { useLaptopStore } from "@/store/useLaptopStore";
 import {
   FormFieldType,
   UpdateDetailsSchema,
@@ -23,6 +23,7 @@ import { Pencil } from "lucide-react";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "@/components/CustomFormField";
 import { SelectItem } from "@/components/ui/select";
+import { LaptopStatus } from "@/types/types";
 
 interface UpdateFormProps {
   laptop: {
@@ -33,17 +34,12 @@ interface UpdateFormProps {
     ram: string;
     rom: string;
     os: string;
-    status?:
-      | "Available"
-      | "In Use"
-      | "Retired"
-      | "In Repair"
-      | "Fully Depreciated";
+    status?: LaptopStatus;
   };
 }
 
 const UpdateForm = ({ laptop }: UpdateFormProps) => {
-  const { loading, updateLaptop } = useLaptopDetailsStore();
+  const { loading, updateLaptop } = useLaptopStore();
   const [open, setOpen] = useState(false);
 
   const form = useForm<UpdateDetailsFormData>({
@@ -56,7 +52,7 @@ const UpdateForm = ({ laptop }: UpdateFormProps) => {
       ram: laptop.ram,
       rom: laptop.rom,
       os: laptop.os,
-      status: laptop.status || "Available",
+      status: LaptopStatus.AVAILABLE,
     },
   });
 

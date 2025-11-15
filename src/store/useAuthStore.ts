@@ -2,35 +2,10 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import axios from "axios";
 import { toast } from "react-toastify";
+import type { AuthState } from "@/types/types";
 
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-  isVerified: boolean;
-  avatar?: string;
-}
-
-interface AuthResult {
-  success: boolean;
-}
-
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  loading: boolean;
-  register: (
-    name: string,
-    email: string,
-    password: string
-  ) => Promise<AuthResult>;
-  verifyOtp: (email: string, otp: string) => Promise<void>;
-  login: (email: string, password: string) => Promise<AuthResult>;
-  resendOtp: (email: string) => Promise<void>;
-  logout: () => void;
-}
-
-const url = "https://it-asset-register-server.onrender.com";
+export const backendUrl = import.meta.env.VITE_BACKEND_URL;
+// const url = "https://it-asset-register-server.onrender.com";
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -42,7 +17,7 @@ export const useAuthStore = create<AuthState>()(
       register: async (name, email, password) => {
         set({ loading: true });
         try {
-          const response = await axios.post(`${url}/api/user/register`, {
+          const response = await axios.post(`${backendUrl}/user/register`, {
             name,
             email,
             password,
@@ -78,7 +53,7 @@ export const useAuthStore = create<AuthState>()(
       login: async (email, password) => {
         set({ loading: true });
         try {
-          const res = await axios.post(`${url}/api/user/login`, {
+          const res = await axios.post(`${backendUrl}/user/login`, {
             email,
             password,
           });
@@ -113,7 +88,7 @@ export const useAuthStore = create<AuthState>()(
       verifyOtp: async (email, otp) => {
         set({ loading: true });
         try {
-          const res = await axios.post(`${url}/api/user/verify-otp`, {
+          const res = await axios.post(`${backendUrl}/user/verify-otp`, {
             email,
             otp,
           });
@@ -146,7 +121,7 @@ export const useAuthStore = create<AuthState>()(
       resendOtp: async (email) => {
         set({ loading: true });
         try {
-          await axios.post(`${url}/api/user/resend-otp`, { email });
+          await axios.post(`${backendUrl}/user/resend-otp`, { email });
           toast.success("OTP resent to your email");
         } catch (error: unknown) {
           if (axios.isAxiosError(error)) {

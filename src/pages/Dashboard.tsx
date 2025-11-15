@@ -9,15 +9,15 @@ import {
   TrendingUp,
   ArrowRight,
 } from "lucide-react";
-import { useLaptopDetailsStore } from "@/store/laptopDetailsStore";
 import { useAssignmentStore } from "@/store/assignmentStore";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { UserAvatar } from "@/components/Avatar";
+import { useLaptopStore } from "@/store/useLaptopStore";
 
 export default function LaptopDashboard() {
-  const { laptops, fetchLaptops } = useLaptopDetailsStore();
+  const { laptops, fetchLaptops } = useLaptopStore();
   const { assignments, fetchAssignments } = useAssignmentStore();
 
   useEffect(() => {
