@@ -1,6 +1,7 @@
 import type { AssignmentState } from "@/types/types";
 import { create } from "zustand";
 import { backendUrl } from "./useAuthStore";
+import { useLaptopStore } from "./useLaptopStore";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -15,6 +16,11 @@ export const useAssignmentStore = create<AssignmentState>((set) => ({
       set({ loading: true });
       const res = await axios.post(`${backendUrl}/laptops/${id}/assign`, user);
       set({ laptop: res.data.data, loading: false, error: null });
+
+      // Refetch laptops to update the table
+      await useLaptopStore.getState().fetchLaptops();
+
+      toast.success("Laptop assigned successfully");
       return { success: true };
     } catch (error: unknown) {
       set({ loading: false });
@@ -46,6 +52,11 @@ export const useAssignmentStore = create<AssignmentState>((set) => ({
       set({ loading: true });
       const res = await axios.put(`${backendUrl}/laptops/${id}/reassign`, user);
       set({ laptop: res.data.data, loading: false, error: null });
+
+      // Refetch laptops to update the table
+      await useLaptopStore.getState().fetchLaptops();
+
+      toast.success("Laptop reassigned successfully");
       return { success: true };
     } catch (error: unknown) {
       set({ loading: false });
@@ -81,6 +92,11 @@ export const useAssignmentStore = create<AssignmentState>((set) => ({
         updates
       );
       set({ laptop: res.data.data, loading: false, error: null });
+
+      // Refetch laptops to update the table
+      await useLaptopStore.getState().fetchLaptops();
+
+      toast.success("User updated successfully");
     } catch (error: unknown) {
       set({ loading: false });
 
@@ -111,6 +127,11 @@ export const useAssignmentStore = create<AssignmentState>((set) => ({
       set({ loading: true });
       const res = await axios.put(`${backendUrl}/laptops/${id}/return`);
       set({ laptop: res.data.data, loading: false, error: null });
+
+      // Refetch laptops to update the table
+      await useLaptopStore.getState().fetchLaptops();
+
+      toast.success("Laptop returned successfully");
     } catch (error: unknown) {
       set({ loading: false });
 

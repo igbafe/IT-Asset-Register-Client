@@ -1,4 +1,3 @@
-import { LaptopStatus } from "@/types/types";
 import { z } from "zod";
 
 export const addLaptopSchema = z.object({
@@ -9,7 +8,6 @@ export const addLaptopSchema = z.object({
   ram: z.string().min(1, { message: "RAM is required" }),
   rom: z.string().min(1, { message: "ROM is required" }),
   os: z.string().min(1, { message: "Operating system is required" }),
-  status: z.enum(LaptopStatus),
 });
 
 export type addLaptopFormData = z.infer<typeof addLaptopSchema>;
@@ -27,7 +25,6 @@ export const UpdateDetailsSchema = z.object({
   ram: z.string().min(1, "RAM field is required").or(z.literal("")),
   rom: z.string().min(1, "ROM field is required").or(z.literal("")),
   os: z.string().min(1, "Operating system is required").or(z.literal("")),
-  status: z.enum(LaptopStatus),
 });
 
 export type UpdateDetailsFormData = z.infer<typeof UpdateDetailsSchema>;

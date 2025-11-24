@@ -1,8 +1,9 @@
-import type { Assignment } from "@/store/assignmentStore";
+
 import { Button } from "../../ui/button";
 import { useNavigate } from "react-router-dom";
 import { Eye } from "lucide-react";
 import UpdateAssignmentForm from "@/components/form/assignment/UpdateAssignmentForm";
+import type { Assignment } from "@/types/types";
 
 interface AssignmentActionsCellProps {
   assignment: Assignment;
@@ -18,7 +19,7 @@ export function AssignmentActionsCell({
   };
   return (
     <div className="flex items-center gap-2">
-      <UpdateAssignmentForm assignment={assignment} />
+     {UpdateAssignmentForm(assignment._id)}
       <Button
         variant="ghost"
         size="sm"

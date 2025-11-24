@@ -11,18 +11,14 @@ export interface AuthState {
   user: User | null;
   token: string | null;
   loading: boolean;
-  register: (
-    name: string,
-    email: string,
-    password: string
-  ) => Promise<Result>;
+  register: (name: string, email: string, password: string) => Promise<Result>;
   verifyOtp: (email: string, otp: string) => Promise<void>;
   login: (email: string, password: string) => Promise<Result>;
   resendOtp: (email: string) => Promise<void>;
   logout: () => void;
 }
 
-// laptop details 
+// laptop details
 export interface LaptopDetails {
   currentUser?: LaptopUser | null;
   previousUser?: LaptopUser[];
@@ -34,7 +30,7 @@ export interface LaptopDetails {
   ram: string;
   rom: string;
   os: string;
-  status: LaptopStatus;
+  status?: LaptopStatus;
   createdAt?: string;
   updatedAt?: string;
   retirementDate?: Date;
@@ -60,6 +56,17 @@ interface Result {
   success: boolean;
 }
 
+export interface RecentActivity {
+  _id: string;
+  serialNumber: string;
+  fullName: string;
+  department: string;
+  status: "current" | "previous";
+  assignedDate: Date;
+  returnedDate?: Date;
+  laptopStatus: LaptopStatus;
+}
+
 export interface LaptopStore {
   laptops: LaptopDetails[];
   selectedLaptop: LaptopDetails | null;
@@ -74,7 +81,11 @@ export interface LaptopStore {
     serialNumber: string,
     updates: Partial<LaptopDetails>
   ) => Promise<void>;
-  retireLaptop: (serialNumber: string, retirementNote?: string) => Promise<void>;
+  retireLaptop: (
+    serialNumber: string,
+    retirementNote?: string
+  ) => Promise<void>;
+  getRecentActivities: () => RecentActivity[];
   setSelectedLaptop: (laptop: LaptopDetails | null) => void;
 }
 
@@ -105,4 +116,35 @@ export interface AssignmentState {
   updateCurrentUser: (id: string, updates: Partial<IUser>) => Promise<void>;
   returnCurrentUser: (id: string) => Promise<void>;
   getAllUsers: (id: string) => Promise<void>;
+}
+
+export interface Assignment {
+  _id: string;
+  systemName: string;
+  serialNumber: string;
+  currentUser: {
+    fullName: string;
+    email: string;
+    department: string;
+    assignedDate: string;
+  } | null;
+}
+
+export interface AssignmentDetails {
+  _id: string;
+  systemName: string;
+  serialNumber: string;
+  currentUser: {
+    fullName: string;
+    email: string;
+    department: string;
+    assignedDate: string;
+  } | null;
+  previousUser: {
+    fullName: string;
+    email: string;
+    department: string;
+    assignedDate: string;
+    returnedDate: string;
+  }[];
 }

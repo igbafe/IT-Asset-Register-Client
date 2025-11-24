@@ -1,8 +1,7 @@
-import type { Assignment } from "@/store/assignmentStore";
+import type { Assignment } from "@/types/types";
 import type { ColumnDef } from "@tanstack/react-table";
-import { AssignmentStatusBadge } from "./AssignmentStatusBadge";
+import { LaptopStatusBadge } from "../laptopDetails/laptopStatusBadge";
 import { AssignmentActionsCell } from "./AssignmentActionCell";
-
 
 export const assignmentColumns: ColumnDef<Assignment>[] = [
   {
@@ -14,22 +13,25 @@ export const assignmentColumns: ColumnDef<Assignment>[] = [
     header: "Serial Number",
   },
   {
-    accessorKey: "fullName",
+    accessorKey: "currentUser.fullName",
     header: "Full Name",
   },
   {
-    accessorKey: "email",
+    accessorKey: "currentUser.email",
     header: "Email",
   },
   {
-    accessorKey: "department",
+    accessorKey: "currentUser.department",
     header: "Department",
   },
   {
-    accessorKey: "assignedDate",
+    accessorKey: "currentUser.assignedDate",
     header: "Assigned Date",
     cell: ({ row }) => {
-      const date = new Date(row.getValue("assignedDate"));
+      const assignedDate = row.original.currentUser?.assignedDate;
+      if (!assignedDate) return "—"; // Handle undefined case
+
+      const date = new Date(assignedDate);
       return date.toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
@@ -40,9 +42,7 @@ export const assignmentColumns: ColumnDef<Assignment>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => (
-      <AssignmentStatusBadge status={row.getValue("status")} />
-    ),
+    cell: ({ row }) => <LaptopStatusBadge status={row.getValue("status")} />,
   },
   {
     id: "actions",

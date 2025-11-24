@@ -22,7 +22,6 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "@/components/CustomFormField";
 import { useLaptopStore } from "@/store/useLaptopStore";
-import { LaptopStatus } from "@/types/types";
 
 const AddForm = () => {
   const { addLaptop, loading } = useLaptopStore();
@@ -38,7 +37,6 @@ const AddForm = () => {
       ram: "",
       rom: "",
       os: "",
-      status: LaptopStatus.AVAILABLE,
     },
   });
 
