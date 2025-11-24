@@ -1,7 +1,6 @@
 // ...existing code...
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAssignmentStore, type Assignment } from "@/store/assignmentStore";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, UserX, Trash2, Clock } from "lucide-react";
 
@@ -12,91 +11,89 @@ import {
 } from "@/components/table/assignments/AssignmentCard";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import ReassignForm from "@/components/form/assignment/ReassignForm";
-// ...existing code...
+import { useLaptopStore } from "@/store/useLaptopStore";
+import type { AssignmentDetails } from "@/types/types";
+import { useAssignmentStore } from "@/store/useAssignmentStore";
 
 export default function LaptopAssignmentDetails() {
   const { serialNumber } = useParams();
   const navigate = useNavigate();
-  const { getAssignmentBySerialNumber, retireAssignment, loading } =
-    useAssignmentStore();
-
-  const [currentAssignment, setCurrentAssignment] = useState<Assignment | null>(
-    null
-  );
-  const [previousAssignments, setPreviousAssignments] = useState<Assignment[]>(
-    []
-  );
+  const { laptops, fetchLaptops, loading } = useLaptopStore();
+  const { returnCurrentUser } = useAssignmentStore();
 
   useEffect(() => {
-    if (serialNumber) {
-      loadAssignments();
-    } else {
-      setCurrentAssignment(null);
-      setPreviousAssignments([]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [serialNumber]);
+    fetchLaptops();
+  }, [fetchLaptops]);
 
-  const loadAssignments = async () => {
-    if (!serialNumber) return;
+  const assignments: AssignmentDetails[] = laptops
+    .filter((laptop) => laptop.currentUser && laptop._id)
+    .map((laptop) => ({
+      _id: laptop._id!,
+      systemName: laptop.systemName,
+      serialNumber: laptop.serialNumber,
+      currentUser: laptop.currentUser
+        ? {
+            fullName: laptop.currentUser.fullName,
+            email: laptop.currentUser.email,
+            department: laptop.currentUser.department,
+            assignedDate:
+              laptop.currentUser.assignedDate instanceof Date
+                ? laptop.currentUser.assignedDate.toISOString()
+                : String(laptop.currentUser.assignedDate),
+          }
+        : null,
+      previousUser: laptop.previousUser
+        ? laptop.previousUser.map((user) => ({
+            fullName: user.fullName,
+            email: user.email,
+            department: user.department,
+            assignedDate:
+              user.assignedDate instanceof Date
+                ? user.assignedDate.toISOString()
+                : String(user.assignedDate),
+            returnedDate:
+              user.returnedDate instanceof Date
+                ? user.returnedDate.toISOString()
+                : String(user.returnedDate),
+          }))
+        : [],
+      status: laptop.status,
+    }));
 
-    try {
-      const data = await getAssignmentBySerialNumber(serialNumber);
+  const assignmentInfo = assignments.find(
+    (a) => a.serialNumber === serialNumber
+  );
 
-      if (!data) {
-        setCurrentAssignment(null);
-        setPreviousAssignments([]);
-        return;
-      }
+  const handleReturn = async () => {
+    const confirmResult = await Swal.fire({
+      title: "Are you sure?",
+      text: `You are about to return ${assignmentInfo?.systemName}. This action cannot be undone.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, return it!",
+    });
 
-      const assignments: Assignment[] = Array.isArray(data)
-        ? (data as Assignment[])
-        : typeof data === "object" && data !== null && Array.isArray((data as { assignments?: unknown }).assignments)
-        ? ((data as { assignments?: Assignment[] }).assignments as Assignment[])
-        : [];
-
-      // normalize to null when not found (avoids undefined)
-      const active: Assignment | null =
-        assignments.find((a) => a.status === "Active") ?? null;
-      const history: Assignment[] = assignments.filter(
-        (a) => a.status !== "Active"
-      );
-
-      setCurrentAssignment(active);
-      setPreviousAssignments(history);
-    } catch (error) {
-      console.error("Failed to load assignments:", error);
-      setCurrentAssignment(null);
-      setPreviousAssignments([]);
-    }
-  };
-
-  const handleRetire = async () => {
-    const identifier = currentAssignment?.systemName;
-    if (!identifier) {
-      Swal.fire("Error", "Missing identifier for retire action", "error");
+    if (!confirmResult.isConfirmed) {
       return;
     }
 
-    const result = await Swal.fire({
-      title: "Retire Laptop?",
-      text: `This will permanently retire ${identifier}. All active assignments will be closed.`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#dc2626",
-      cancelButtonColor: "#6b7280",
-      confirmButtonText: "Yes, Retire",
-    });
-
-    if (!result.isConfirmed) return;
+    const id = assignmentInfo?._id; // Get the id
+    if (!id) {
+      Swal.fire("Error", "Missing laptop ID", "error"); // Handle missing ID
+      return;
+    }
 
     try {
-      await retireAssignment(identifier);
-      Swal.fire("Retired", "Laptop retired successfully", "success");
-      navigate("/assignments");
+      await returnCurrentUser(id); // Call with the valid ID
+      Swal.fire(
+        "Success",
+        `${assignmentInfo.systemName} has been returned.`,
+        "success"
+      );
     } catch (error) {
-      console.error("Retire failed", error);
-      Swal.fire("Error", "Failed to retire laptop", "error");
+      console.log("Failed to return laptop", error);
     }
   };
 
@@ -117,7 +114,7 @@ export default function LaptopAssignmentDetails() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold">
-              Assignment for {currentAssignment?.systemName}
+              Assignment for {assignmentInfo?.systemName}
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
               Serial Number: {serialNumber}
@@ -127,16 +124,16 @@ export default function LaptopAssignmentDetails() {
           <div className="flex flex-wrap gap-2">
             <Button
               variant="destructive"
-              onClick={handleRetire}
+              onClick={handleReturn}
               className="flex items-center gap-2"
             >
               <Trash2 size={16} />
-              Retire Laptop
+              Return Laptop
             </Button>
-            {serialNumber && currentAssignment?.systemName && (
+            {serialNumber && assignmentInfo?.systemName && (
               <ReassignForm
                 serialNumber={serialNumber}
-                systemName={currentAssignment.systemName}
+                systemName={assignmentInfo.systemName}
               />
             )}
           </div>
@@ -146,16 +143,13 @@ export default function LaptopAssignmentDetails() {
       {/* Main Content */}
       <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto space-y-6">
         {/* Current Assignment Card */}
-        {currentAssignment ? (
+        {assignmentInfo ? (
           <div>
             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
               <span className="text-green-600">👤</span>
               Current Assignment
             </h2>
-            <ActiveAssignmentCard
-              assignment={currentAssignment}
-              onReassign={loadAssignments}
-            />
+            <ActiveAssignmentCard assignment={assignmentInfo} />
           </div>
         ) : (
           <div className="bg-white dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 p-8">
@@ -174,15 +168,20 @@ export default function LaptopAssignmentDetails() {
         )}
 
         {/* Previous Assignments Table */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <Clock className="text-gray-600" size={20} />
-            Assignment History
-          </h2>
-          <PreviousAssignmentsTable assignments={previousAssignments} />
-        </div>
+        {assignmentInfo ? (
+          <div>
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <Clock className="text-gray-600" size={20} />
+              Assignment History
+            </h2>
+            <PreviousAssignmentsTable assignment={assignmentInfo} />
+          </div>
+        ) : (
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            No Active Assignment
+          </h3>
+        )}
       </main>
     </div>
   );
 }
-// ...existing code...

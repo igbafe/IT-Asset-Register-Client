@@ -12,57 +12,54 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { useAssignmentStore } from "@/store/assignmentStore";
 import {
-  assignLaptopSchema,
-  type UpdateAssignmentFormData,
+  updateCurrentUserSchema,
+  type UpdateCurrentUserFormData,
 } from "@/validation/assignmentValidation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import CustomFormField from "@/components/CustomFormField";
 import { Form } from "@/components/ui/form";
-import { SelectItem } from "@/components/ui/select";
+import { useAssignmentStore } from "@/store/useAssignmentStore";
+import { useLaptopStore } from "@/store/useLaptopStore";
 
-export interface UpdateAssignmentFormProps {
-  assignment: {
-    _id: string;
-    systemName: string;
-    serialNumber: string;
-    fullName: string;
-    email: string;
-    department: string;
-    assignedDate: Date;
-    returnedDate?: Date;
-    status: "Active" | "Returned" | "Retired";
-  };
-}
-
-const UpdateAssignmentForm = ({ assignment }: UpdateAssignmentFormProps) => {
-  const { updateLaptop, loading } = useAssignmentStore();
+const UpdateAssignmentForm = (LaptopId: string) => {
+  const { updateCurrentUser, loading } = useAssignmentStore();
+  const { fetchLaptops } = useLaptopStore();
   const [open, setOpen] = useState(false);
 
-  const form = useForm<UpdateAssignmentFormData>({
+  const form = useForm<UpdateCurrentUserFormData>({
     resolver: zodResolver(
-      assignLaptopSchema
-    ) as unknown as Resolver<UpdateAssignmentFormData>,
+      updateCurrentUserSchema
+    ) as unknown as Resolver<UpdateCurrentUserFormData>,
     defaultValues: {
-      systemName: assignment.systemName,
-      fullName: assignment.fullName,
-      email: assignment.email,
-      department: assignment.department,
-      serialNumber: assignment.serialNumber,
-      assignedDate: new Date(assignment.assignedDate),
-      returnedDate: assignment.returnedDate,
-      status: assignment.status,
+      fullName: "",
+      email: "",
+      department: "",
     },
   });
 
+  useEffect(() => {
+    fetchLaptops();
+  }, [fetchLaptops]);
+
   // use the correct typed form data and call assignLaptop
-  const onSubmit = async (values: UpdateAssignmentFormData) => {
+  const onSubmit = async (values: UpdateCurrentUserFormData) => {
     try {
-      await updateLaptop(assignment._id, values);
+      // Remove empty string values
+      const filteredValues = Object.fromEntries(
+        Object.entries(values).filter(([, value]) => value !== "")
+      );
+
+      // Check if at least one field has a value
+      if (Object.keys(filteredValues).length === 0) {
+        alert("Please fill in at least one field");
+        return;
+      }
+
+      await updateCurrentUser(LaptopId, filteredValues);
       form.reset();
       setOpen(false);
     } catch (error) {
@@ -96,15 +93,7 @@ const UpdateAssignmentForm = ({ assignment }: UpdateAssignmentFormProps) => {
         <div className="flex-1 overflow-y-auto px-6 py-4">
           <Form {...form}>
             <div className="space-y-5">
-              {/* System Name - Full Width */}
-              <CustomFormField
-                fieldType={FormFieldType.INPUT}
-                control={form.control}
-                name="systemName"
-                label="System Name"
-                placeholder="LNKLOP12633"
-              />
-
+              {/* Full Name & Email - Side by Side */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CustomFormField
                   fieldType={FormFieldType.INPUT}
@@ -123,7 +112,8 @@ const UpdateAssignmentForm = ({ assignment }: UpdateAssignmentFormProps) => {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Department & Serial Number - Side by Side */}
+              <div>
                 <CustomFormField
                   fieldType={FormFieldType.INPUT}
                   control={form.control}
@@ -131,50 +121,6 @@ const UpdateAssignmentForm = ({ assignment }: UpdateAssignmentFormProps) => {
                   label="Department"
                   placeholder="IT"
                 />
-
-                <CustomFormField
-                  fieldType={FormFieldType.INPUT}
-                  control={form.control}
-                  name="serialNumber"
-                  label="Serial Number"
-                  placeholder="SN12345678"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <CustomFormField
-                  fieldType={FormFieldType.DATE_PICKER}
-                  control={form.control}
-                  name="assignedDate"
-                  label="Assigned Date"
-                  placeholder="Select assigned date"
-                />
-                <CustomFormField
-                  fieldType={FormFieldType.SELECT}
-                  control={form.control}
-                  name="status"
-                  label="Status"
-                  placeholder="Select Status"
-                >
-                  <SelectItem
-                    value="Active"
-                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Active
-                  </SelectItem>
-                  <SelectItem
-                    value="Returned"
-                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Returned
-                  </SelectItem>
-                  <SelectItem
-                    value="Retired"
-                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Retired
-                  </SelectItem>
-                </CustomFormField>
               </div>
             </div>
           </Form>

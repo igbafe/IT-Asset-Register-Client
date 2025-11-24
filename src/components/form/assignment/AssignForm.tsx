@@ -11,45 +11,58 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useAssignmentStore } from "@/store/assignmentStore";
 import {
-  assignLaptopSchema,
-  type AssignLaptopFormData,
+  LaptopUserSchema,
+  type LaptopUserFormData,
 } from "@/validation/assignmentValidation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "@/components/CustomFormField";
+import { useAssignmentStore } from "@/store/useAssignmentStore";
+import { useLaptopStore } from "@/store/useLaptopStore";
+import { SelectItem } from "@/components/ui/select";
+import { LaptopStatus } from "@/types/types";
 
 const AssignForm = () => {
   const { assignLaptop, loading } = useAssignmentStore();
+  const { laptops, fetchLaptops } = useLaptopStore();
   const [open, setOpen] = useState(false);
 
-  const form = useForm<AssignLaptopFormData>({
-    // cast resolver to the form's Resolver type to satisfy TS when preprocess is used
-    resolver: zodResolver(
-      assignLaptopSchema
-    ) as unknown as Resolver<AssignLaptopFormData>,
+  const form = useForm<LaptopUserFormData>({
+    resolver: zodResolver(LaptopUserSchema) as unknown as Resolver<LaptopUserFormData>,
     defaultValues: {
-      systemName: "",
       fullName: "",
       email: "",
       department: "",
-      serialNumber: "",
-      assignedDate: new Date(),
     },
   });
 
-  // use the correct typed form data and call assignLaptop
-  const onSubmit = async (values: AssignLaptopFormData) => {
-    const result = await assignLaptop(values);
+  useEffect(() => {
+    fetchLaptops();
+  }, [fetchLaptops]);
+
+  const onSubmit = async (values: LaptopUserFormData) => {
+     const selectedLaptop = laptops.find(
+    (lap) => lap._id === values.laptopId
+  );
+
+  if (!selectedLaptop?._id) {
+    console.error("Laptop not found or missing _id");
+    return;
+  }
+
+  console.log("Assigning laptop:", selectedLaptop.systemName);
+
+    // Call assignLaptop with _id + values
+    const result = await assignLaptop(selectedLaptop._id, values);
     if (result?.success) {
       form.reset();
       setOpen(false);
     }
-  };
 
+  };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {loading && <LoadingOverlay />}
@@ -71,15 +84,6 @@ const AssignForm = () => {
         <div className="flex-1 overflow-y-auto px-6 py-4">
           <Form {...form}>
             <div className="space-y-5">
-              {/* System Name - Full Width */}
-              <CustomFormField
-                fieldType={FormFieldType.INPUT}
-                control={form.control}
-                name="systemName"
-                label="System Name"
-                placeholder="LNKLOP12633"
-              />
-
               {/* Full Name & Email - Side by Side */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CustomFormField
@@ -102,30 +106,33 @@ const AssignForm = () => {
               {/* Department & Serial Number - Side by Side */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CustomFormField
+                  fieldType={FormFieldType.SELECT}
+                  control={form.control}
+                  name="laptopId"
+                  label="Laptop Info"
+                  placeholder="Select a laptop"
+                >
+                  {laptops
+                    .filter(
+                      (lap) =>
+                        lap.status === LaptopStatus.AVAILABLE ||
+                        lap.status === LaptopStatus.RETURNED
+                    )
+                    .map((lap) => (
+                      <SelectItem key={lap._id} value={lap._id!}>
+                        {lap.serialNumber} — {lap.systemName}
+                      </SelectItem>
+                    ))}
+                </CustomFormField>
+
+                <CustomFormField
                   fieldType={FormFieldType.INPUT}
                   control={form.control}
                   name="department"
                   label="Department"
                   placeholder="IT"
                 />
-
-                <CustomFormField
-                  fieldType={FormFieldType.INPUT}
-                  control={form.control}
-                  name="serialNumber"
-                  label="Serial Number"
-                  placeholder="SN12345678"
-                />
               </div>
-
-              {/* Assigned Date - Full Width */}
-              <CustomFormField
-                fieldType={FormFieldType.DATE_PICKER}
-                control={form.control}
-                name="assignedDate"
-                label="Assigned Date"
-                placeholder="Select assigned date"
-              />
             </div>
           </Form>
         </div>

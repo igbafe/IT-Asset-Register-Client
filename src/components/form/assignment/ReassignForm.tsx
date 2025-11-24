@@ -1,6 +1,6 @@
 import { FormFieldType } from "@/validation/laptopDetailsvalidation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import {
   Dialog,
   DialogClose,
@@ -11,8 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useAssignmentStore } from "@/store/assignmentStore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -22,6 +21,8 @@ import {
   type ReassignLaptopFormData,
 } from "@/validation/assignmentValidation";
 import { toast } from "react-toastify";
+import { useAssignmentStore } from "@/store/useAssignmentStore";
+import { useLaptopStore } from "@/store/useLaptopStore";
 
 type ReassignFormProps = {
   systemName: string;
@@ -30,24 +31,30 @@ type ReassignFormProps = {
 
 const ReassignForm = ({ systemName, serialNumber }: ReassignFormProps) => {
   const { reassignLaptop, loading } = useAssignmentStore();
+  const { laptops, fetchLaptops } = useLaptopStore();
   const [open, setOpen] = useState(false);
 
   const form = useForm<ReassignLaptopFormData>({
-    resolver: zodResolver(reassignLaptopSchema) as any, // Type assertion to fix date handling
+    resolver: zodResolver(reassignLaptopSchema) as unknown as Resolver<ReassignLaptopFormData>,
     defaultValues: {
-      systemName,
-      serialNumber,
       fullName: "",
       email: "",
       department: "",
-      assignedDate: new Date(),
-      returnedDate: undefined,
     },
   });
 
+  useEffect(() => {
+    fetchLaptops();
+  }, [fetchLaptops]);
+
   const onSubmit = async (values: ReassignLaptopFormData) => {
     try {
-      const result = await reassignLaptop(serialNumber, values);
+      const laptop = laptops.find((lap) => lap.serialNumber === serialNumber);
+      if (!laptop?._id) {
+        console.error("Laptop _id not found");
+        return;
+      }
+      const result = await reassignLaptop(laptop._id, values);
       if (result?.success) {
         form.reset();
         setOpen(false);
@@ -105,15 +112,6 @@ const ReassignForm = ({ systemName, serialNumber }: ReassignFormProps) => {
                 name="department"
                 label="Department"
                 placeholder="IT"
-              />
-
-              {/* Assigned Date */}
-              <CustomFormField
-                fieldType={FormFieldType.DATE_PICKER}
-                control={form.control}
-                name="assignedDate"
-                label="Assigned Date"
-                placeholder="Select assigned date"
               />
             </form>
           </Form>

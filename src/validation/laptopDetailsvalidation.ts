@@ -1,49 +1,16 @@
 import { z } from "zod";
 
-export const laptopDetailsSchema = z.object({
-  systemName: z
-    .string()
-    .min(2, "System name must be at least 2 characters long"),
-  brand: z.string().min(1, "Brand is required"),
-  model: z.string().min(1, "Model is required"),
-  serialNumber: z
-    .string()
-    .min(3, "Serial number must be at least 3 characters long"),
-  ram: z.string().min(1, "RAM field is required"),
-  rom: z.string().min(1, "ROM field is required"),
-  os: z.string().min(1, "Operating system is required"),
-  status: z.enum([
-    "Available",
-    "In Use",
-    "Retired",
-    "In Repair",
-    "Fully Depreciated",
-  ]),
+export const addLaptopSchema = z.object({
+  systemName: z.string().min(1, { message: "System name is required" }),
+  brand: z.string().min(1, { message: "Brand is required" }),
+  model: z.string().min(1, { message: "Model is required" }),
+  serialNumber: z.string().min(1, { message: "Serial number is required" }),
+  ram: z.string().min(1, { message: "RAM is required" }),
+  rom: z.string().min(1, { message: "ROM is required" }),
+  os: z.string().min(1, { message: "Operating system is required" }),
 });
 
-export type LaptopDetailsFormData = z.infer<typeof laptopDetailsSchema>;
-
-export const signupSchema = z.object({
-  name: z
-    .string()
-    .min(2, { message: "Full name must be at least 2 characters long" })
-    .trim(),
-  email: z.email({ message: "Please enter a valid email address" }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters long" }),
-});
-
-export type SignupFormData = z.infer<typeof signupSchema>;
-
-export const loginSchema = z.object({
-  email: z.email({ message: "Please enter a valid email address" }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters long" }),
-});
-
-export type LoginFormData = z.infer<typeof loginSchema>;
+export type addLaptopFormData = z.infer<typeof addLaptopSchema>;
 
 export const UpdateDetailsSchema = z.object({
   systemName: z
@@ -58,9 +25,6 @@ export const UpdateDetailsSchema = z.object({
   ram: z.string().min(1, "RAM field is required").or(z.literal("")),
   rom: z.string().min(1, "ROM field is required").or(z.literal("")),
   os: z.string().min(1, "Operating system is required").or(z.literal("")),
-  status: z
-    .enum(["Available", "In Use", "Retired", "In Repair", "Fully Depreciated"])
-    .optional(),
 });
 
 export type UpdateDetailsFormData = z.infer<typeof UpdateDetailsSchema>;

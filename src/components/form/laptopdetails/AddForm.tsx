@@ -1,8 +1,7 @@
-import { useLaptopDetailsStore } from "@/store/laptopDetailsStore";
 import {
+  addLaptopSchema,
   FormFieldType,
-  laptopDetailsSchema,
-  type LaptopDetailsFormData,
+  type addLaptopFormData,
 } from "@/validation/laptopDetailsvalidation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -22,14 +21,14 @@ import LoadingOverlay from "@/components/LoadingOverlay";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "@/components/CustomFormField";
-import { SelectItem } from "@/components/ui/select";
+import { useLaptopStore } from "@/store/useLaptopStore";
 
 const AddForm = () => {
-  const { addLaptop, loading } = useLaptopDetailsStore();
+  const { addLaptop, loading } = useLaptopStore();
   const [open, setOpen] = useState(false);
 
-  const form = useForm<LaptopDetailsFormData>({
-    resolver: zodResolver(laptopDetailsSchema),
+  const form = useForm<addLaptopFormData>({
+    resolver: zodResolver(addLaptopSchema),
     defaultValues: {
       systemName: "",
       brand: "",
@@ -38,11 +37,10 @@ const AddForm = () => {
       ram: "",
       rom: "",
       os: "",
-      status: "Available",
     },
   });
 
-  const onSubmit = async (values: LaptopDetailsFormData) => {
+  const onSubmit = async (values: addLaptopFormData) => {
     const result = await addLaptop(values);
     if (result.success) {
       form.reset();
@@ -125,7 +123,7 @@ const AddForm = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div >
                 <CustomFormField
                   fieldType={FormFieldType.INPUT}
                   control={form.control}
@@ -133,44 +131,6 @@ const AddForm = () => {
                   label="Operating System"
                   placeholder="Windows 10"
                 />
-                <CustomFormField
-                  fieldType={FormFieldType.SELECT}
-                  control={form.control}
-                  name="status"
-                  label="Status"
-                  placeholder="Select Status"
-                >
-                  <SelectItem
-                    value="Available"
-                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Available
-                  </SelectItem>
-                  <SelectItem
-                    value="In Use"
-                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    In Use
-                  </SelectItem>
-                  <SelectItem
-                    value="Retired"
-                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Retired
-                  </SelectItem>
-                  <SelectItem
-                    value="In Repair"
-                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    In Repair
-                  </SelectItem>
-                  <SelectItem
-                    value="Fully Depreciated"
-                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Fully Depreciated
-                  </SelectItem>
-                </CustomFormField>
               </div>
             </div>
           </Form>

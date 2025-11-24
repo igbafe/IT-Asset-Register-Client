@@ -1,51 +1,16 @@
 import axios from "axios";
 import { create } from "zustand";
 import { toast } from "react-toastify";
+import {
+  LaptopStatus,
+  type LaptopStore,
+  type RecentActivity,
+} from "@/types/types";
+import { backendUrl } from "./useAuthStore";
 
-export interface LaptopDetails {
-  _id?: string;
-  systemName: string;
-  brand: string;
-  model: string;
-  serialNumber: string;
-  ram: string;
-  rom: string;
-  os: string;
-  status:
-    | "Available"
-    | "In Use"
-    | "Retired"
-    | "In Repair"
-    | "Fully Depreciated";
-  createdAt?: string;
-  updatedAt?: string;
-}
+// const backendUrl = "https://it-asset-register-server.onrender.com";
 
-interface Result {
-  success: boolean;
-}
-
-interface LaptopStore {
-  laptops: LaptopDetails[];
-  selectedLaptop: LaptopDetails | null;
-  loading: boolean;
-  error: string | null;
-
-  // Actions
-  fetchLaptops: () => Promise<void>;
-  getLaptopBySerial: (serialNumber: string) => Promise<void>;
-  addLaptop: (data: Omit<LaptopDetails, "_id">) => Promise<Result>;
-  updateLaptop: (
-    serialNumber: string,
-    updates: Partial<LaptopDetails>
-  ) => Promise<void>;
-  retireLaptop: (serialNumber: string) => Promise<void>;
-  setSelectedLaptop: (laptop: LaptopDetails | null) => void;
-}
-
-const url = "https://it-asset-register-server.onrender.com";
-
-export const useLaptopDetailsStore = create<LaptopStore>((set) => ({
+export const useLaptopStore = create<LaptopStore>((set, get) => ({
   laptops: [],
   selectedLaptop: null,
   loading: false,
@@ -54,7 +19,7 @@ export const useLaptopDetailsStore = create<LaptopStore>((set) => ({
   fetchLaptops: async () => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.get(`${url}/api/laptopDetails`);
+      const res = await axios.get(`${backendUrl}/laptops`);
       set({ laptops: res.data.data, loading: false });
     } catch (error: unknown) {
       set({ loading: false });
@@ -83,7 +48,7 @@ export const useLaptopDetailsStore = create<LaptopStore>((set) => ({
   getLaptopBySerial: async (serialNumber) => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.get(`${url}/api/laptopDetails/${serialNumber}`);
+      const res = await axios.get(`${backendUrl}/laptops/${serialNumber}`);
       set({ selectedLaptop: res.data.laptop, loading: false });
     } catch (error: unknown) {
       set({ loading: false });
@@ -114,7 +79,7 @@ export const useLaptopDetailsStore = create<LaptopStore>((set) => ({
   addLaptop: async (data) => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.post(`${url}/api/laptopDetails`, data);
+      const res = await axios.post(`${backendUrl}/laptops`, data);
       set((state) => ({
         laptops: [...state.laptops, res.data.laptop],
         loading: false,
@@ -150,7 +115,7 @@ export const useLaptopDetailsStore = create<LaptopStore>((set) => ({
     try {
       set({ loading: true, error: null });
       const res = await axios.put(
-        `${url}/api/laptopDetails/${serialNumber}`,
+        `${backendUrl}/laptops/${serialNumber}`,
         updates
       );
       set((state) => ({
@@ -184,11 +149,12 @@ export const useLaptopDetailsStore = create<LaptopStore>((set) => ({
     }
   },
 
-  retireLaptop: async (serialNumber) => {
+  retireLaptop: async (serialNumber, retirementNote) => {
     try {
       set({ loading: true, error: null });
       const res = await axios.put(
-        `${url}/api/laptopDetails/retire/${serialNumber}`
+        `${backendUrl}/laptops/retire/${serialNumber}`,
+        { retirementNote }
       );
       set((state) => ({
         laptops: state.laptops.map((l) =>
@@ -219,6 +185,50 @@ export const useLaptopDetailsStore = create<LaptopStore>((set) => ({
         toast.error("An unexpected error occurred");
       }
     }
+  },
+
+  // Get all recent activities from all laptops
+  getRecentActivities: () => {
+    const { laptops } = get();
+    const activities: RecentActivity[] = [];
+
+    laptops.forEach((laptop) => {
+      // Add current user activity
+      if (laptop.currentUser) {
+        activities.push({
+          _id: `${laptop._id}-current`,
+          serialNumber: laptop.serialNumber,
+          fullName: laptop.currentUser.fullName,
+          department: laptop.currentUser.department,
+          status: "current",
+          assignedDate: laptop.currentUser.assignedDate,
+          returnedDate: laptop.currentUser.returnedDate,
+          laptopStatus: LaptopStatus.ASSIGNED,
+        });
+      }
+
+      // Add previous users activities
+      if (laptop.previousUser && laptop.previousUser.length > 0) {
+        laptop.previousUser.forEach((prevUser, index) => {
+          activities.push({
+            _id: `${laptop._id}-prev-${index}`,
+            serialNumber: laptop.serialNumber,
+            fullName: prevUser.fullName,
+            department: prevUser.department,
+            status: "previous",
+            assignedDate: prevUser.assignedDate,
+            returnedDate: prevUser.returnedDate,
+            laptopStatus: LaptopStatus.RETURNED,
+          });
+        });
+      }
+    });
+
+    // Sort by assignedDate (newest first)
+    return activities.sort(
+      (a, b) =>
+        new Date(b.assignedDate).getTime() - new Date(a.assignedDate).getTime()
+    );
   },
 
   setSelectedLaptop: (laptop) => set({ selectedLaptop: laptop }),

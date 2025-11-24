@@ -1,55 +1,48 @@
-import {
-  CheckCircle,
-  XCircle,
-  Wrench,
-  Clock,
-  AlertTriangle,
-} from "lucide-react";
+import { CheckCircle, XCircle, Wrench, Clock } from "lucide-react";
 import clsx from "clsx";
+import { LaptopStatus } from "@/types/types";
 
 interface LaptopStatusBadgeProps {
-  status:
-    | "Available"
-    | "In Use"
-    | "Retired"
-    | "In Repair"
-    | "Fully Depreciated";
+  status: LaptopStatus;
 }
 
 export function LaptopStatusBadge({ status }: LaptopStatusBadgeProps) {
-  const statusStyles = {
-    Available: {
+  const statusStyles: Record<
+    LaptopStatus,
+    {
+      label: string;
+      icon: React.ComponentType<{ size?: number }>;
+      bg: string;
+      text: string;
+    }
+  > = {
+    available: {
+      label: "Available",
       icon: CheckCircle,
       bg: "bg-green-100 dark:bg-green-900/40",
       text: "text-green-700 dark:text-green-400",
     },
-    "In Use": {
+    assigned: {
+      label: "Assigned",
       icon: Clock,
       bg: "bg-blue-100 dark:bg-blue-900/40",
       text: "text-blue-700 dark:text-blue-400",
     },
-    Retired: {
-      icon: XCircle,
-      bg: "bg-gray-100 dark:bg-gray-800/60",
-      text: "text-gray-700 dark:text-gray-400",
-    },
-    "In Repair": {
+    returned: {
+      label: "Returned",
       icon: Wrench,
       bg: "bg-yellow-100 dark:bg-yellow-900/40",
       text: "text-yellow-700 dark:text-yellow-400",
     },
-    "Fully Depreciated": {
-      icon: AlertTriangle,
-      bg: "bg-red-100 dark:bg-red-900/40",
-      text: "text-red-700 dark:text-red-400",
+    retired: {
+      label: "Retired",
+      icon: XCircle,
+      bg: "bg-gray-100 dark:bg-gray-800/60",
+      text: "text-gray-700 dark:text-gray-400",
     },
   };
 
-  const {
-    icon: Icon,
-    bg,
-    text,
-  } = statusStyles[status] || statusStyles["Available"];
+  const { label, icon: Icon, bg, text } = statusStyles[status];
 
   return (
     <div
@@ -60,7 +53,7 @@ export function LaptopStatusBadge({ status }: LaptopStatusBadgeProps) {
       )}
     >
       <Icon size={14} />
-      {status}
+      {label}
     </div>
   );
 }

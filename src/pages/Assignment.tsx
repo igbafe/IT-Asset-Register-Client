@@ -1,31 +1,50 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Sidebar";
-
-
 import { DataTable } from "@/components/table/data-table";
 import { Search } from "lucide-react";
-
-import { useAssignmentStore } from "@/store/assignmentStore";
 import { useEffect, useState } from "react";
 import AssignForm from "@/components/form/assignment/AssignForm";
 import { assignmentColumns } from "@/components/table/assignments/AssignmentColumns";
 import { UserAvatar } from "@/components/Avatar";
+import { useLaptopStore } from "@/store/useLaptopStore";
+import type { Assignment } from "@/types/types";
+
 
 
 export default function Assignments() {
-  const { assignments, fetchAssignments } = useAssignmentStore();
+  const { laptops, fetchLaptops } = useLaptopStore();
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    fetchAssignments();
-  }, [fetchAssignments]);
+    fetchLaptops();
+  }, [fetchLaptops]);
+
+ const assignments: Assignment[] = laptops
+    .filter((laptop) => laptop.currentUser && laptop._id)
+    .map((laptop) => ({
+      _id: laptop._id!,
+      systemName: laptop.systemName,
+      serialNumber: laptop.serialNumber,
+      currentUser: laptop.currentUser
+        ? {
+            fullName: laptop.currentUser.fullName,
+            email: laptop.currentUser.email,
+            department: laptop.currentUser.department,
+            assignedDate:
+              laptop.currentUser.assignedDate instanceof Date
+                ? laptop.currentUser.assignedDate.toISOString()
+                : String(laptop.currentUser.assignedDate),
+          }
+        : null,
+      status: laptop.status,
+    }));
 
   const filteredAssignmets = assignments.filter((assignment) => {
     const term = searchTerm.toLowerCase();
     return (
       assignment.systemName.toLowerCase().includes(term) ||
-      assignment.fullName.toLowerCase().includes(term) ||
-      assignment.department.toLowerCase().includes(term) ||
+      assignment.currentUser?.fullName.toLowerCase().includes(term) ||
+      assignment.currentUser?.department.toLowerCase().includes(term) ||
       assignment.serialNumber.toLowerCase().includes(term)
     );
   });

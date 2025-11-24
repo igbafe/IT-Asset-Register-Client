@@ -1,4 +1,4 @@
-import { useLaptopDetailsStore } from "@/store/laptopDetailsStore";
+import { useLaptopStore } from "@/store/useLaptopStore";
 import {
   FormFieldType,
   UpdateDetailsSchema,
@@ -22,7 +22,6 @@ import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "@/components/CustomFormField";
-import { SelectItem } from "@/components/ui/select";
 
 interface UpdateFormProps {
   laptop: {
@@ -33,17 +32,11 @@ interface UpdateFormProps {
     ram: string;
     rom: string;
     os: string;
-    status?:
-      | "Available"
-      | "In Use"
-      | "Retired"
-      | "In Repair"
-      | "Fully Depreciated";
   };
 }
 
 const UpdateForm = ({ laptop }: UpdateFormProps) => {
-  const { loading, updateLaptop } = useLaptopDetailsStore();
+  const { loading, updateLaptop } = useLaptopStore();
   const [open, setOpen] = useState(false);
 
   const form = useForm<UpdateDetailsFormData>({
@@ -56,7 +49,6 @@ const UpdateForm = ({ laptop }: UpdateFormProps) => {
       ram: laptop.ram,
       rom: laptop.rom,
       os: laptop.os,
-      status: laptop.status || "Available",
     },
   });
 
@@ -157,7 +149,7 @@ const UpdateForm = ({ laptop }: UpdateFormProps) => {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
                 <CustomFormField
                   fieldType={FormFieldType.INPUT}
                   control={form.control}
@@ -165,44 +157,6 @@ const UpdateForm = ({ laptop }: UpdateFormProps) => {
                   label="Operating System"
                   placeholder="Windows 10"
                 />
-                <CustomFormField
-                  fieldType={FormFieldType.SELECT}
-                  control={form.control}
-                  name="status"
-                  label="Status"
-                  placeholder="Select Status"
-                >
-                  <SelectItem
-                    value="Available"
-                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Available
-                  </SelectItem>
-                  <SelectItem
-                    value="In Use"
-                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    In Use
-                  </SelectItem>
-                  <SelectItem
-                    value="Retired"
-                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Retired
-                  </SelectItem>
-                  <SelectItem
-                    value="In Repair"
-                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    In Repair
-                  </SelectItem>
-                  <SelectItem
-                    value="Fully Depreciated"
-                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Fully Depreciated
-                  </SelectItem>
-                </CustomFormField>
               </div>
             </div>
           </Form>
