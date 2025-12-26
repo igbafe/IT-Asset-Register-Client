@@ -139,6 +139,8 @@ export const useAuthStore = create<AuthState>()(
 
       logout: () => {
         set({ user: null, token: null });
+        // Explicitly clear from localStorage
+        localStorage.removeItem("auth-storage");
         toast.success("Logged out successfully");
       },
     }),

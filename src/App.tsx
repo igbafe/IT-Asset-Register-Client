@@ -11,6 +11,8 @@ import "react-toastify/dist/ReactToastify.css";
 import LaptopAssignmentDetails from "./pages/AssignmentDetails";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { Navigate } from "react-router-dom";
+import LaptopQRCodes from "./pages/LaptopQRCodes";
+import LaptopQRScanPage from "./pages/QRScanPage";
 
 function App() {
   return (
@@ -21,10 +23,14 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/passkeyModal" element={<PasskeyModal />} />
-        
+        <Route
+          path="/laptops/qr/:serialNumber"
+          element={<LaptopQRScanPage />}
+        />
+
         {/* Redirect root to dashboard */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        
+
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<LaptopDashboard />} />
@@ -34,6 +40,7 @@ function App() {
             path="/assignments/:serialNumber"
             element={<LaptopAssignmentDetails />}
           />
+          <Route path="/laptopQrcodes" element={<LaptopQRCodes />} />
         </Route>
       </Routes>
     </div>
