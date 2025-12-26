@@ -1,9 +1,9 @@
 import type { AssignmentState } from "@/types/types";
 import { create } from "zustand";
-import { backendUrl } from "./useAuthStore";
 import { useLaptopStore } from "./useLaptopStore";
 import axios from "axios";
 import { toast } from "react-toastify";
+import axiosInstance from "@/lib/axiosInstance";
 
 export const useAssignmentStore = create<AssignmentState>((set) => ({
   laptop: null,
@@ -14,7 +14,7 @@ export const useAssignmentStore = create<AssignmentState>((set) => ({
   assignLaptop: async (id, user) => {
     try {
       set({ loading: true });
-      const res = await axios.post(`${backendUrl}/laptops/${id}/assign`, user);
+      const res = await axiosInstance.post(`/laptops/${id}/assign`, user);
       set({ laptop: res.data.data, loading: false, error: null });
 
       // Refetch laptops to update the table
@@ -50,7 +50,7 @@ export const useAssignmentStore = create<AssignmentState>((set) => ({
   reassignLaptop: async (id, user) => {
     try {
       set({ loading: true });
-      const res = await axios.put(`${backendUrl}/laptops/${id}/reassign`, user);
+      const res = await axiosInstance.put(`/laptops/${id}/reassign`, user);
       set({ laptop: res.data.data, loading: false, error: null });
 
       // Refetch laptops to update the table
@@ -87,8 +87,8 @@ export const useAssignmentStore = create<AssignmentState>((set) => ({
   updateCurrentUser: async (id, updates) => {
     try {
       set({ loading: true });
-      const res = await axios.put(
-        `${backendUrl}/laptops/${id}/update-user`,
+      const res = await axiosInstance.put(
+        `/laptops/${id}/update-user`,
         updates
       );
       set({ laptop: res.data.data, loading: false, error: null });
@@ -125,7 +125,7 @@ export const useAssignmentStore = create<AssignmentState>((set) => ({
   returnCurrentUser: async (id) => {
     try {
       set({ loading: true });
-      const res = await axios.put(`${backendUrl}/laptops/${id}/return`);
+      const res = await axiosInstance.put(`/laptops/${id}/return`);
       set({ laptop: res.data.data, loading: false, error: null });
 
       // Refetch laptops to update the table
@@ -160,7 +160,7 @@ export const useAssignmentStore = create<AssignmentState>((set) => ({
   getAllUsers: async (id) => {
     try {
       set({ loading: true });
-      const res = await axios.get(`${backendUrl}/laptops/${id}/users`);
+      const res = await axiosInstance.get(`/laptops/${id}/users`);
       set({ laptop: res.data.data, loading: false, error: null });
     } catch (error: unknown) {
       set({ loading: false });

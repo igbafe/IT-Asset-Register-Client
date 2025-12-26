@@ -6,9 +6,10 @@ import {
   type LaptopStore,
   type RecentActivity,
 } from "@/types/types";
-import { backendUrl } from "./useAuthStore";
+import axiosInstance from "@/lib/axiosInstance";
 
-// const backendUrl = "https://it-asset-register-server.onrender.com";
+// const backendUrl = "https://it-asset-register-server.onrender.com"
+
 
 export const useLaptopStore = create<LaptopStore>((set, get) => ({
   laptops: [],
@@ -19,7 +20,7 @@ export const useLaptopStore = create<LaptopStore>((set, get) => ({
   fetchLaptops: async () => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.get(`${backendUrl}/laptops`);
+      const res = await axiosInstance.get(`/laptops`);
       set({ laptops: res.data.data, loading: false });
     } catch (error: unknown) {
       set({ loading: false });
@@ -48,7 +49,7 @@ export const useLaptopStore = create<LaptopStore>((set, get) => ({
   getLaptopBySerial: async (serialNumber) => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.get(`${backendUrl}/laptops/${serialNumber}`);
+      const res = await axiosInstance.get(`/laptops/${serialNumber}`);
       set({ selectedLaptop: res.data.laptop, loading: false });
     } catch (error: unknown) {
       set({ loading: false });
@@ -79,7 +80,7 @@ export const useLaptopStore = create<LaptopStore>((set, get) => ({
   addLaptop: async (data) => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.post(`${backendUrl}/laptops`, data);
+      const res = await axiosInstance.post(`/laptops`, data);
       set((state) => ({
         laptops: [...state.laptops, res.data.laptop],
         loading: false,
@@ -114,10 +115,7 @@ export const useLaptopStore = create<LaptopStore>((set, get) => ({
   updateLaptop: async (serialNumber, updates) => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.put(
-        `${backendUrl}/laptops/${serialNumber}`,
-        updates
-      );
+      const res = await axiosInstance.put(`/laptops/${serialNumber}`, updates);
       set((state) => ({
         laptops: state.laptops.map((l) =>
           l.serialNumber === serialNumber ? res.data.laptop : l
@@ -152,10 +150,9 @@ export const useLaptopStore = create<LaptopStore>((set, get) => ({
   retireLaptop: async (serialNumber, retirementNote) => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.put(
-        `${backendUrl}/laptops/retire/${serialNumber}`,
-        { retirementNote }
-      );
+      const res = await axiosInstance.put(`/laptops/retire/${serialNumber}`, {
+        retirementNote,
+      });
       set((state) => ({
         laptops: state.laptops.map((l) =>
           l.serialNumber === serialNumber ? res.data.laptop : l

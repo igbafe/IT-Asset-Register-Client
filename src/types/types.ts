@@ -148,3 +148,56 @@ export interface AssignmentDetails {
     returnedDate: string;
   }[];
 }
+
+
+// QR Code types
+export interface LaptopQRCode {
+  laptopId: string;
+  serialNumber: string;
+  systemName: string;
+  brand: string;
+  model: string;
+  ram: string;
+  rom: string;
+  os: string;
+  status: string;
+  currentUser?: LaptopUser | null;
+  previousUser?: LaptopUser[];
+  retirementDate?: string;
+  retirementNote?: string;
+  createdAt: string;
+  updatedAt: string;
+  scanUrl: string;
+  qrCode: string;
+}
+
+export interface QRCodeResponse {
+  success: boolean;
+  serialNumber?: string;
+  scanUrl?: string;
+  qrCode?: string;
+  count?: number;
+  data?: LaptopQRCode[];
+  message?: string;
+}
+
+export interface SingleQRCodeResponse {
+  success: boolean;
+  data?: LaptopQRCode;
+  message?: string;
+}
+
+export interface LaptopQRState {
+  // State
+  qrCodes: LaptopQRCode[];
+  selectedQRCode: LaptopQRCode | null;
+  loading: boolean;
+  error: string | null;
+
+  // Actions
+  fetchAllQRCodes: () => Promise<void>;
+  fetchQRCodeBySerial: (serialNumber: string) => Promise<void>;
+  downloadQRCode: (serialNumber: string) => Promise<void>;
+  clearError: () => void;
+  setSelectedQRCode: (qrCode: LaptopQRCode | null) => void;
+}
