@@ -61,7 +61,7 @@ export default function Assignments() {
 
             <div className="flex items-center gap-4">
               <SidebarTrigger />
-              <UserAvatar />
+              <UserAvatar /> 
             </div>
           </header>
 

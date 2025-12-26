@@ -14,6 +14,7 @@ import { ModeToggle } from "./mode-toggle";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 
+
 // Menu items.
 const items = [
   {
@@ -30,6 +31,11 @@ const items = [
     title: "Assignments",
     url: "/assignments",
     icon: UserPen,
+  },
+  {
+    title: "QR Codes",
+    url: "/laptopQrcodes",
+    icon: MonitorCog,
   },
 ];
 
