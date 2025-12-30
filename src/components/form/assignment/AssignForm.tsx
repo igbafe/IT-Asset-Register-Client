@@ -24,6 +24,7 @@ import { useAssignmentStore } from "@/store/useAssignmentStore";
 import { useLaptopStore } from "@/store/useLaptopStore";
 import { SelectItem } from "@/components/ui/select";
 import { LaptopStatus } from "@/types/types";
+import { toast } from "react-toastify";
 
 const AssignForm = () => {
   const { assignLaptop, loading } = useAssignmentStore();
@@ -31,7 +32,9 @@ const AssignForm = () => {
   const [open, setOpen] = useState(false);
 
   const form = useForm<LaptopUserFormData>({
-    resolver: zodResolver(LaptopUserSchema) as unknown as Resolver<LaptopUserFormData>,
+    resolver: zodResolver(
+      LaptopUserSchema
+    ) as unknown as Resolver<LaptopUserFormData>,
     defaultValues: {
       fullName: "",
       email: "",
@@ -44,24 +47,25 @@ const AssignForm = () => {
   }, [fetchLaptops]);
 
   const onSubmit = async (values: LaptopUserFormData) => {
-     const selectedLaptop = laptops.find(
-    (lap) => lap._id === values.laptopId
-  );
+    const selectedLaptop = laptops.find((lap) => lap._id === values.laptopId);
 
-  if (!selectedLaptop?._id) {
-    console.error("Laptop not found or missing _id");
-    return;
-  }
+    if (!selectedLaptop?._id) {
+      console.error("Laptop not found or missing _id");
+      return;
+    }
 
-  console.log("Assigning laptop:", selectedLaptop.systemName);
+    console.log("Assigning laptop:", selectedLaptop.systemName);
 
     // Call assignLaptop with _id + values
     const result = await assignLaptop(selectedLaptop._id, values);
-    if (result?.success) {
+
+    if (result.success) {
       form.reset();
       setOpen(false);
+      toast.success(result.message || "Assignment successful!");
+    } else {
+      toast.error(result.error || "Assignment failed");
     }
-
   };
   return (
     <Dialog open={open} onOpenChange={setOpen}>

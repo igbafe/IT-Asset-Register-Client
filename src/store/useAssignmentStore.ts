@@ -2,7 +2,6 @@ import type { AssignmentState } from "@/types/types";
 import { create } from "zustand";
 import { useLaptopStore } from "./useLaptopStore";
 import axios from "axios";
-import { toast } from "react-toastify";
 import axiosInstance from "@/lib/axiosInstance";
 
 export const useAssignmentStore = create<AssignmentState>((set) => ({
@@ -20,29 +19,37 @@ export const useAssignmentStore = create<AssignmentState>((set) => ({
       // Refetch laptops to update the table
       await useLaptopStore.getState().fetchLaptops();
 
-      toast.success("Laptop assigned successfully");
-      return { success: true };
+      return {
+        success: true,
+        message: res.data.message || "Registration successful",
+      };
     } catch (error: unknown) {
-      set({ loading: false });
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
         const zodErrors = error.response?.data?.errors;
 
-        if (Array.isArray(zodErrors) && zodErrors.length > 0) {
+        if (zodErrors && Array.isArray(zodErrors)) {
           const firstError =
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
-              : zodErrors[0].message || "Validation failed";
-          toast.error(`Validation Error: ${firstError}`);
+              : zodErrors[0].message;
+          return {
+            success: false,
+            error: firstError || "Validation error",
+          };
         } else {
-          toast.error(backendMessage || "Failed to assign laptop");
+          return {
+            success: false,
+            error: backendMessage || "Assignment failed",
+          };
         }
       } else if (error instanceof Error) {
-        toast.error(error.message);
+        return { success: false, error: error.message };
       } else {
-        toast.error("An unexpected error occurred");
+        return { success: false, error: "An unexpected error occurred" };
       }
-      return { success: false };
+    } finally {
+      set({ loading: false });
     }
   },
 
@@ -56,30 +63,37 @@ export const useAssignmentStore = create<AssignmentState>((set) => ({
       // Refetch laptops to update the table
       await useLaptopStore.getState().fetchLaptops();
 
-      toast.success("Laptop reassigned successfully");
-      return { success: true };
+      return {
+        success: true,
+        message: res.data.message || "Registration successful",
+      };
     } catch (error: unknown) {
-      set({ loading: false });
-
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
         const zodErrors = error.response?.data?.errors;
 
-        if (Array.isArray(zodErrors) && zodErrors.length > 0) {
+        if (zodErrors && Array.isArray(zodErrors)) {
           const firstError =
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
-              : zodErrors[0].message || "Validation failed";
-          toast.error(`Validation Error: ${firstError}`);
+              : zodErrors[0].message;
+          return {
+            success: false,
+            error: firstError || "Validation error",
+          };
         } else {
-          toast.error(backendMessage || "Failed to reassign laptop");
+          return {
+            success: false,
+            error: backendMessage || "Reassignment failed",
+          };
         }
       } else if (error instanceof Error) {
-        toast.error(error.message);
+        return { success: false, error: error.message };
       } else {
-        toast.error("An unexpected error occurred");
+        return { success: false, error: "An unexpected error occurred" };
       }
-      return { success: false };
+    } finally {
+      set({ loading: false });
     }
   },
 
@@ -96,28 +110,37 @@ export const useAssignmentStore = create<AssignmentState>((set) => ({
       // Refetch laptops to update the table
       await useLaptopStore.getState().fetchLaptops();
 
-      toast.success("User updated successfully");
+      return {
+        success: true,
+        message: res.data.message || "Registration successful",
+      };
     } catch (error: unknown) {
-      set({ loading: false });
-
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
         const zodErrors = error.response?.data?.errors;
 
-        if (Array.isArray(zodErrors) && zodErrors.length > 0) {
+        if (zodErrors && Array.isArray(zodErrors)) {
           const firstError =
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
-              : zodErrors[0].message || "Validation failed";
-          toast.error(`Validation Error: ${firstError}`);
+              : zodErrors[0].message;
+          return {
+            success: false,
+            error: firstError || "Validation error",
+          };
         } else {
-          toast.error(backendMessage || "Failed to update user");
+          return {
+            success: false,
+            error: backendMessage || "Update failed",
+          };
         }
       } else if (error instanceof Error) {
-        toast.error(error.message);
+        return { success: false, error: error.message };
       } else {
-        toast.error("An unexpected error occurred");
+        return { success: false, error: "An unexpected error occurred" };
       }
+    } finally {
+      set({ loading: false });
     }
   },
 
@@ -130,29 +153,37 @@ export const useAssignmentStore = create<AssignmentState>((set) => ({
 
       // Refetch laptops to update the table
       await useLaptopStore.getState().fetchLaptops();
-
-      toast.success("Laptop returned successfully");
+      return {
+        success: true,
+        message: res.data.message || "Registration successful",
+      };
     } catch (error: unknown) {
-      set({ loading: false });
-
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
         const zodErrors = error.response?.data?.errors;
 
-        if (Array.isArray(zodErrors) && zodErrors.length > 0) {
+        if (zodErrors && Array.isArray(zodErrors)) {
           const firstError =
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
-              : zodErrors[0].message || "Validation failed";
-          toast.error(`Validation Error: ${firstError}`);
+              : zodErrors[0].message;
+          return {
+            success: false,
+            error: firstError || "Validation error",
+          };
         } else {
-          toast.error(backendMessage || "Failed to return laptop");
+          return {
+            success: false,
+            error: backendMessage || "Return failed",
+          };
         }
       } else if (error instanceof Error) {
-        toast.error(error.message);
+        return { success: false, error: error.message };
       } else {
-        toast.error("An unexpected error occurred");
+        return { success: false, error: "An unexpected error occurred" };
       }
+    } finally {
+      set({ loading: false });
     }
   },
 
@@ -162,27 +193,37 @@ export const useAssignmentStore = create<AssignmentState>((set) => ({
       set({ loading: true });
       const res = await axiosInstance.get(`/laptops/${id}/users`);
       set({ laptop: res.data.data, loading: false, error: null });
+      return {
+        success: true,
+        message: res.data.message || "Registration successful",
+      };
     } catch (error: unknown) {
-      set({ loading: false });
-
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
         const zodErrors = error.response?.data?.errors;
 
-        if (Array.isArray(zodErrors) && zodErrors.length > 0) {
+        if (zodErrors && Array.isArray(zodErrors)) {
           const firstError =
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
-              : zodErrors[0].message || "Validation failed";
-          toast.error(`Validation Error: ${firstError}`);
+              : zodErrors[0].message;
+          return {
+            success: false,
+            error: firstError || "Validation error",
+          };
         } else {
-          toast.error(backendMessage || "Failed to fetch users");
+          return {
+            success: false,
+            error: backendMessage || "Failed to fetch users",
+          };
         }
       } else if (error instanceof Error) {
-        toast.error(error.message);
+        return { success: false, error: error.message };
       } else {
-        toast.error("An unexpected error occurred");
+        return { success: false, error: "An unexpected error occurred" };
       }
+    } finally {
+      set({ loading: false });
     }
   },
 }));
