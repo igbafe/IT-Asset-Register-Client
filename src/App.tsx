@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Login from "./pages/auth/Login";
-import { PasskeyModal } from "./components/PasskeyModal";
 import SignUp from "./pages/auth/SignUp";
 import LaptopDashboard from "./pages/Dashboard";
 import Inventory from "./pages/Inventory";
@@ -22,7 +21,7 @@ function App() {
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/passkeyModal" element={<PasskeyModal />} />
+        {/* <Route path="/passkeyModal" element={<PasskeyModal />} /> */}
 
         {/* Redirect root to dashboard */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
