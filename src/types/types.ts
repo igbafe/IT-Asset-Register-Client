@@ -3,7 +3,6 @@ interface User {
   _id: string;
   name: string;
   email: string;
-  isVerified: boolean;
   avatar?: string;
 }
 
@@ -12,9 +11,7 @@ export interface AuthState {
   token: string | null;
   loading: boolean;
   register: (name: string, email: string, password: string) => Promise<Result>;
-  verifyOtp: (email: string, otp: string) => Promise<void>;
   login: (email: string, password: string) => Promise<Result>;
-  resendOtp: (email: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -54,6 +51,8 @@ export enum LaptopStatus {
 
 interface Result {
   success: boolean;
+  message?: string;
+  error?: string;
 }
 
 export interface RecentActivity {
@@ -74,17 +73,17 @@ export interface LaptopStore {
   error: string | null;
 
   // Actions
-  fetchLaptops: () => Promise<void>;
-  getLaptopBySerial: (serialNumber: string) => Promise<void>;
+  fetchLaptops: () => Promise<Result>;
+  getLaptopBySerial: (serialNumber: string) => Promise<Result>;
   addLaptop: (data: Omit<LaptopDetails, "_id">) => Promise<Result>;
   updateLaptop: (
     serialNumber: string,
     updates: Partial<LaptopDetails>
-  ) => Promise<void>;
+  ) => Promise<Result>;
   retireLaptop: (
     serialNumber: string,
     retirementNote?: string
-  ) => Promise<void>;
+  ) => Promise<Result>;
   getRecentActivities: () => RecentActivity[];
   setSelectedLaptop: (laptop: LaptopDetails | null) => void;
 }
@@ -113,9 +112,9 @@ export interface AssignmentState {
   error: string | null;
   assignLaptop: (id: string, user: IUser) => Promise<Result>;
   reassignLaptop: (id: string, user: IUser) => Promise<Result>;
-  updateCurrentUser: (id: string, updates: Partial<IUser>) => Promise<void>;
-  returnCurrentUser: (id: string) => Promise<void>;
-  getAllUsers: (id: string) => Promise<void>;
+  updateCurrentUser: (id: string, updates: Partial<IUser>) => Promise<Result>;
+  returnCurrentUser: (id: string) => Promise<Result>;
+  getAllUsers: (id: string) => Promise<Result>;
 }
 
 export interface Assignment {
@@ -148,7 +147,6 @@ export interface AssignmentDetails {
     returnedDate: string;
   }[];
 }
-
 
 // QR Code types
 export interface LaptopQRCode {
@@ -195,8 +193,8 @@ export interface LaptopQRState {
   error: string | null;
 
   // Actions
-  fetchAllQRCodes: () => Promise<void>;
-  fetchQRCodeBySerial: (serialNumber: string) => Promise<void>;
+  fetchAllQRCodes: () => Promise<Result>;
+  fetchQRCodeBySerial: (serialNumber: string) => Promise<Result>;
   downloadQRCode: (serialNumber: string) => Promise<void>;
   clearError: () => void;
   setSelectedQRCode: (qrCode: LaptopQRCode | null) => void;

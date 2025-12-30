@@ -1,6 +1,5 @@
 import axios from "axios";
 import { create } from "zustand";
-import { toast } from "react-toastify";
 import {
   LaptopStatus,
   type LaptopStore,
@@ -9,7 +8,6 @@ import {
 import axiosInstance from "@/lib/axiosInstance";
 
 // const backendUrl = "https://it-asset-register-server.onrender.com"
-
 
 export const useLaptopStore = create<LaptopStore>((set, get) => ({
   laptops: [],
@@ -22,6 +20,10 @@ export const useLaptopStore = create<LaptopStore>((set, get) => ({
       set({ loading: true, error: null });
       const res = await axiosInstance.get(`/laptops`);
       set({ laptops: res.data.data, loading: false });
+      return {
+        success: true,
+        message: res.data.message || "Laptops fetched successfully",
+      };
     } catch (error: unknown) {
       set({ loading: false });
 
@@ -34,15 +36,23 @@ export const useLaptopStore = create<LaptopStore>((set, get) => ({
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
               : zodErrors[0].message || "Validation failed";
-          toast.error(`Validation Error: ${firstError}`);
+          return {
+            success: false,
+            error: firstError || "Validation error",
+          };
         } else {
-          toast.error(backendMessage || "Failed to fetch laptops");
+          return {
+            success: false,
+            error: backendMessage || "Failed to fetch laptops",
+          };
         }
       } else if (error instanceof Error) {
-        toast.error(error.message);
+        return { success: false, error: error.message };
       } else {
-        toast.error("An unexpected error occurred");
+        return { success: false, error: "An unexpected error occurred" };
       }
+    } finally {
+      set({ loading: false });
     }
   },
 
@@ -51,29 +61,37 @@ export const useLaptopStore = create<LaptopStore>((set, get) => ({
       set({ loading: true, error: null });
       const res = await axiosInstance.get(`/laptops/${serialNumber}`);
       set({ selectedLaptop: res.data.laptop, loading: false });
+      return {
+        success: true,
+        message: res.data.message || "Laptop fetched successfully",
+      };
     } catch (error: unknown) {
-      set({ loading: false });
-
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
         const zodErrors = error.response?.data?.errors;
 
-        if (Array.isArray(zodErrors) && zodErrors.length > 0) {
+        if (zodErrors && Array.isArray(zodErrors)) {
           const firstError =
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
-              : zodErrors[0].message || "Validation failed";
-          toast.error(`Validation Error: ${firstError}`);
+              : zodErrors[0].message;
+          return {
+            success: false,
+            error: firstError || "Validation error",
+          };
         } else {
-          toast.error(
-            backendMessage || "Failed to fetch laptop using serial number"
-          );
+          return {
+            success: false,
+            error: backendMessage || "Failed to fetch laptop",
+          };
         }
       } else if (error instanceof Error) {
-        toast.error(error.message);
+        return { success: false, error: error.message };
       } else {
-        toast.error("An unexpected error occurred");
+        return { success: false, error: "An unexpected error occurred" };
       }
+    } finally {
+      set({ loading: false });
     }
   },
 
@@ -85,30 +103,37 @@ export const useLaptopStore = create<LaptopStore>((set, get) => ({
         laptops: [...state.laptops, res.data.laptop],
         loading: false,
       }));
-      toast.success("Laptop added successfully!");
-      return { success: true };
+      return {
+        success: true,
+        message: res.data.message || "Registration successful",
+      };
     } catch (error: unknown) {
-      set({ loading: false });
-
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
         const zodErrors = error.response?.data?.errors;
 
-        if (Array.isArray(zodErrors) && zodErrors.length > 0) {
+        if (zodErrors && Array.isArray(zodErrors)) {
           const firstError =
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
-              : zodErrors[0].message || "Validation failed";
-          toast.error(`Validation Error: ${firstError}`);
+              : zodErrors[0].message;
+          return {
+            success: false,
+            error: firstError || "Validation error",
+          };
         } else {
-          toast.error(backendMessage || "Failed to add laptop");
+          return {
+            success: false,
+            error: backendMessage || "Failed to add laptop",
+          };
         }
       } else if (error instanceof Error) {
-        toast.error(error.message);
+        return { success: false, error: error.message };
       } else {
-        toast.error("An unexpected error occurred");
+        return { success: false, error: "An unexpected error occurred" };
       }
-      return { success: false };
+    } finally {
+      set({ loading: false });
     }
   },
 
@@ -122,28 +147,37 @@ export const useLaptopStore = create<LaptopStore>((set, get) => ({
         ),
         loading: false,
       }));
-      toast.success("Laptop updated successfully!");
+      return {
+        success: true,
+        message: res.data.message || "Registration successful",
+      };
     } catch (error: unknown) {
-      set({ loading: false });
-
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
         const zodErrors = error.response?.data?.errors;
 
-        if (Array.isArray(zodErrors) && zodErrors.length > 0) {
+        if (zodErrors && Array.isArray(zodErrors)) {
           const firstError =
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
-              : zodErrors[0].message || "Validation failed";
-          toast.error(`Validation Error: ${firstError}`);
+              : zodErrors[0].message;
+          return {
+            success: false,
+            error: firstError || "Validation error",
+          };
         } else {
-          toast.error(backendMessage || "Failed to update laptop");
+          return {
+            success: false,
+            error: backendMessage || "Failed to update laptop",
+          };
         }
       } else if (error instanceof Error) {
-        toast.error(error.message);
+        return { success: false, error: error.message };
       } else {
-        toast.error("An unexpected error occurred");
+        return { success: false, error: "An unexpected error occurred" };
       }
+    } finally {
+      set({ loading: false });
     }
   },
 
@@ -159,31 +193,39 @@ export const useLaptopStore = create<LaptopStore>((set, get) => ({
         ),
         loading: false,
       }));
-      toast.success("Laptop retired successfully!");
+      return {
+        success: true,
+        message: res.data.message || "Laptop retired successfully",
+      };
     } catch (error: unknown) {
-      set({ loading: false });
-
       if (axios.isAxiosError(error)) {
         const backendMessage = error.response?.data?.message;
         const zodErrors = error.response?.data?.errors;
 
-        if (Array.isArray(zodErrors) && zodErrors.length > 0) {
+        if (zodErrors && Array.isArray(zodErrors)) {
           const firstError =
             typeof zodErrors[0] === "string"
               ? zodErrors[0]
-              : zodErrors[0].message || "Validation failed";
-          toast.error(`Validation Error: ${firstError}`);
+              : zodErrors[0].message;
+          return {
+            success: false,
+            error: firstError || "Validation error",
+          };
         } else {
-          toast.error(backendMessage || "Failed to retire laptop");
+          return {
+            success: false,
+            error: backendMessage || "Failed to retire laptop",
+          };
         }
       } else if (error instanceof Error) {
-        toast.error(error.message);
+        return { success: false, error: error.message };
       } else {
-        toast.error("An unexpected error occurred");
+        return { success: false, error: "An unexpected error occurred" };
       }
+    } finally {
+      set({ loading: false });
     }
   },
-
   // Get all recent activities from all laptops
   getRecentActivities: () => {
     const { laptops } = get();

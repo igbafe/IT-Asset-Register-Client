@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { QRCodePreview } from "@/components/QRCode/QRCodePreview";
 import { useLaptopQRStore } from "@/store/useQrcodeStore";
@@ -7,14 +7,27 @@ import { UserAvatar } from "@/components/Avatar";
 import { AppSidebar } from "@/components/Sidebar";
 import { LaptopStatusBadge } from "@/components/table/laptopDetails/laptopStatusBadge";
 import type { LaptopStatus } from "@/types/types";
+import { Search } from "lucide-react";
 
 export default function LaptopQRCodes() {
   const { qrCodes, loading, error, fetchAllQRCodes, setSelectedQRCode } =
     useLaptopQRStore();
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchAllQRCodes();
   }, [fetchAllQRCodes]);
+
+  const filteredQRCodes = qrCodes.filter((qr) => {
+    const term = searchTerm.toLowerCase();
+
+    return (
+      qr.systemName.toLowerCase().includes(term) ||
+      qr.brand.toLowerCase().includes(term) ||
+      qr.status.toLowerCase().includes(term) ||
+      qr.serialNumber.toLowerCase().includes(term)
+    );
+  });
 
   if (loading) {
     return (
@@ -64,19 +77,36 @@ export default function LaptopQRCodes() {
                     Your Devices
                   </h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {qrCodes.length}{" "}
-                    {qrCodes.length === 1 ? "device" : "devices"} registered
+                    {filteredQRCodes.length}{" "}
+                    {filteredQRCodes.length === 1 ? "device" : "devices"}{" "}
+                    registered
                   </p>
+                </div>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  {/* Search bar */}
+                  <div className="relative flex-1">
+                    <Search
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search QR codes..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full sm:w-64 border border-gray-300 dark:border-gray-700 rounded-md py-2 pl-9 pr-3 text-sm bg-transparent focus:ring-2 focus:ring-indigo-500 outline-none transition-colors"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {qrCodes.length === 0 ? (
+              {filteredQRCodes.length === 0 ? (
                 <div className="text-center py-12 bg-card rounded-lg border border-border">
                   <p className="text-muted-foreground">No QR codes found</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {qrCodes.map((qr) => (
+                  {filteredQRCodes.map((qr) => (
                     <div
                       key={qr.serialNumber}
                       className="bg-card border border-border rounded-lg p-5 hover:shadow-lg hover:border-primary/20 transition-all duration-200"

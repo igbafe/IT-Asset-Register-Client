@@ -2,9 +2,12 @@
 import { create } from "zustand";
 import { backendUrl } from "./useAuthStore";
 import axiosInstance from "@/lib/axiosInstance";
-import type {  LaptopQRState, QRCodeResponse, SingleQRCodeResponse } from "@/types/types";
-
-
+import type {
+  LaptopQRState,
+  QRCodeResponse,
+  SingleQRCodeResponse,
+} from "@/types/types";
+import axios from "axios";
 
 export const useLaptopQRStore = create<LaptopQRState>((set) => ({
   // Initial State
@@ -22,16 +25,38 @@ export const useLaptopQRStore = create<LaptopQRState>((set) => ({
       );
       const data = response.data;
 
-      if (!data.success) {
-        throw new Error(data.message || "Failed to fetch QR codes");
-      }
-
       set({ qrCodes: data.data || [], loading: false });
-    } catch (error) {
-      set({
-        error: error instanceof Error ? error.message : "An error occurred",
-        loading: false,
-      });
+      return {
+        success: true,
+        message: response.data.message || "Registration successful",
+      };
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const backendMessage = error.response?.data?.message;
+        const zodErrors = error.response?.data?.errors;
+
+        if (zodErrors && Array.isArray(zodErrors)) {
+          const firstError =
+            typeof zodErrors[0] === "string"
+              ? zodErrors[0]
+              : zodErrors[0].message;
+          return {
+            success: false,
+            error: firstError || "Validation error",
+          };
+        } else {
+          return {
+            success: false,
+            error: backendMessage || "Failed to fetch QR codes",
+          };
+        }
+      } else if (error instanceof Error) {
+        return { success: false, error: error.message };
+      } else {
+        return { success: false, error: "An unexpected error occurred" };
+      }
+    } finally {
+      set({ loading: false });
     }
   },
 
@@ -44,20 +69,38 @@ export const useLaptopQRStore = create<LaptopQRState>((set) => ({
       );
       const data = response.data;
 
-      if (!data.success) {
-        throw new Error(data.message || "Failed to fetch QR code");
-      }
-
-      if (!data.success || !data.data) {
-      throw new Error(data.message || "Failed to fetch QR code");
-    }
-
       set({ selectedQRCode: data.data, loading: false });
-    } catch (error) {
-      set({
-        error: error instanceof Error ? error.message : "An error occurred",
-        loading: false,
-      });
+      return {
+        success: true,
+        message: response.data.message || "Registration successful",
+      };
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const backendMessage = error.response?.data?.message;
+        const zodErrors = error.response?.data?.errors;
+
+        if (zodErrors && Array.isArray(zodErrors)) {
+          const firstError =
+            typeof zodErrors[0] === "string"
+              ? zodErrors[0]
+              : zodErrors[0].message;
+          return {
+            success: false,
+            error: firstError || "Validation error",
+          };
+        } else {
+          return {
+            success: false,
+            error: backendMessage || "Failed to fetch QR code",
+          };
+        }
+      } else if (error instanceof Error) {
+        return { success: false, error: error.message };
+      } else {
+        return { success: false, error: "An unexpected error occurred" };
+      }
+    } finally {
+      set({ loading: false });
     }
   },
 
@@ -71,7 +114,6 @@ export const useLaptopQRStore = create<LaptopQRState>((set) => ({
       );
 
       const blob = response.data;
-      if (!blob) throw new Error("Failed to download QR code");
 
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -82,6 +124,8 @@ export const useLaptopQRStore = create<LaptopQRState>((set) => ({
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
+
+
       set({ loading: false });
     } catch (error) {
       set({
@@ -90,7 +134,7 @@ export const useLaptopQRStore = create<LaptopQRState>((set) => ({
       });
     }
   },
-  
+
   // Clear error
   clearError: () => set({ error: null }),
 

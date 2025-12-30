@@ -24,6 +24,7 @@ import CustomFormField from "@/components/CustomFormField";
 import { Form } from "@/components/ui/form";
 import { useAssignmentStore } from "@/store/useAssignmentStore";
 import { useLaptopStore } from "@/store/useLaptopStore";
+import { toast } from "react-toastify";
 
 const UpdateAssignmentForm = (LaptopId: string) => {
   const { updateCurrentUser, loading } = useAssignmentStore();
@@ -59,11 +60,15 @@ const UpdateAssignmentForm = (LaptopId: string) => {
         return;
       }
 
-      await updateCurrentUser(LaptopId, filteredValues);
-      form.reset();
-      setOpen(false);
+      const result = await updateCurrentUser(LaptopId, filteredValues);
+      if (result.success) {
+        form.reset();
+        setOpen(false);
+        toast.success(result.message || "Registration successful!");
+      }
     } catch (error) {
-      console.error("Failed to update assignment:", error);
+      console.error("Update assignment failed", error);
+      toast.error("Failed to update assignment:");
     }
   };
 
