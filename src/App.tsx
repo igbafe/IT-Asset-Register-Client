@@ -23,10 +23,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/passkeyModal" element={<PasskeyModal />} />
-        <Route
-          path="/laptops/qr/:serialNumber"
-          element={<LaptopQRScanPage />}
-        />
 
         {/* Redirect root to dashboard */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -39,6 +35,10 @@ function App() {
           <Route
             path="/assignments/:serialNumber"
             element={<LaptopAssignmentDetails />}
+          />
+          <Route
+            path="/laptops/qr/:serialNumber"
+            element={<LaptopQRScanPage />}
           />
           <Route path="/laptopQrcodes" element={<LaptopQRCodes />} />
         </Route>

@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/useAuthStore";
 import { loginSchema, type LoginFormData } from "@/validation/authValidation";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const { login, loading } = useAuthStore();
@@ -34,7 +35,10 @@ const Login = () => {
   const onSubmit = async (data: LoginFormData) => {
     const result = await login(data.email, data.password);
     if (result.success) {
-      navigate("/dashboard");
+      toast.success(result.message || "Registration successful!");
+      navigate("/dashboard", { state: { email: data.email } });
+    } else {
+      toast.error(result.error || "Registration failed");
     }
   };
 

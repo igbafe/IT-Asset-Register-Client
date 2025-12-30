@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "@/components/CustomFormField";
 import { useLaptopStore } from "@/store/useLaptopStore";
+import { toast } from "react-toastify";
 
 const AddForm = () => {
   const { addLaptop, loading } = useLaptopStore();
@@ -45,6 +46,9 @@ const AddForm = () => {
     if (result.success) {
       form.reset();
       setOpen(false);
+      toast.success(result.message || "laptop added successfully!");
+    } else {
+      toast.error(result.error || "Failed to add laptop");
     }
   };
 
@@ -123,7 +127,7 @@ const AddForm = () => {
                 />
               </div>
 
-              <div >
+              <div>
                 <CustomFormField
                   fieldType={FormFieldType.INPUT}
                   control={form.control}

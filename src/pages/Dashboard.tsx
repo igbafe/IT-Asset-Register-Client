@@ -23,58 +23,58 @@ export default function LaptopDashboard() {
     laptops?.filter((l) => l.status === "available").length || 0;
   const totalLaptops = laptops?.length || 0;
 
-  // Get all recent activities sorted by date
   const allActivities = getRecentActivities();
-
-  // Get last 5 activities
   const recentActivities = allActivities.slice(0, 5);
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen w-screen bg-background">
+      <div className="flex min-h-screen w-full bg-background">
         <AppSidebar />
 
-        <div className="flex-1 flex flex-col overflow-y-auto w-full hide-scrollbar">
-          <div className="p-6 max-w-7xl mx-auto space-y-6 w-full">
-            {/* Header */}
-            <header className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
-                  Dashboard
-                </h1>
-                <p className="text-muted-foreground mt-1">
-                  Welcome back! Here's your laptop overview
-                </p>
-              </div>
-              <div className="flex gap-4 items-center">
-                <SidebarTrigger />
-                <UserAvatar />
-              </div>
-            </header>
+        {/* Main content area with fixed positioning context */}
+        <main className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+          <div className="flex-1 overflow-y-auto">
+            <div className="p-4 sm:p-6 max-w-7xl mx-auto w-full">
+              {/* Header */}
+              <header className="flex items-center justify-between mb-6">
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
+                    Dashboard
+                  </h1>
+                  <p className="text-sm sm:text-base text-muted-foreground mt-1">
+                    Welcome back! Here's your laptop overview
+                  </p>
+                </div>
+                <div className="flex gap-2 sm:gap-4 items-center flex-shrink-0 ml-4">
+                  <SidebarTrigger />
+                  <UserAvatar />
+                </div>
+              </header>
 
-            {/* Stats Section */}
-            <DashboardStats
-              totalLaptops={totalLaptops}
-              assignedCount={assignedCount}
-              availableCount={availableCount}
-              retiredCount={retiredCount}
-            />
+              {/* Content with consistent spacing */}
+              <div className="space-y-6">
+                <DashboardStats
+                  totalLaptops={totalLaptops}
+                  assignedCount={assignedCount}
+                  availableCount={availableCount}
+                  retiredCount={retiredCount}
+                />
 
-            {/* Two Column Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <RecentActivitySection recentActivities={recentActivities} />
-              <QuickStatsCard
-                assignedCount={assignedCount}
-                availableCount={availableCount}
-                retiredCount={retiredCount}
-                totalLaptops={totalLaptops}
-              />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                  <RecentActivitySection recentActivities={recentActivities} />
+                  <QuickStatsCard
+                    assignedCount={assignedCount}
+                    availableCount={availableCount}
+                    retiredCount={retiredCount}
+                    totalLaptops={totalLaptops}
+                  />
+                </div>
+
+                <RecentAssignmentsTable recentActivities={recentActivities} />
+              </div>
             </div>
-
-            {/* Recent Assignments Table */}
-            <RecentAssignmentsTable recentActivities={recentActivities} />
           </div>
-        </div>
+        </main>
       </div>
     </SidebarProvider>
   );

@@ -35,7 +35,9 @@ const ReassignForm = ({ systemName, serialNumber }: ReassignFormProps) => {
   const [open, setOpen] = useState(false);
 
   const form = useForm<ReassignLaptopFormData>({
-    resolver: zodResolver(reassignLaptopSchema) as unknown as Resolver<ReassignLaptopFormData>,
+    resolver: zodResolver(
+      reassignLaptopSchema
+    ) as unknown as Resolver<ReassignLaptopFormData>,
     defaultValues: {
       fullName: "",
       email: "",
@@ -55,9 +57,10 @@ const ReassignForm = ({ systemName, serialNumber }: ReassignFormProps) => {
         return;
       }
       const result = await reassignLaptop(laptop._id, values);
-      if (result?.success) {
+      if (result.success) {
         form.reset();
         setOpen(false);
+        toast.success(result.message || "Registration successful!");
       }
     } catch (error) {
       console.error("Reassign failed", error);

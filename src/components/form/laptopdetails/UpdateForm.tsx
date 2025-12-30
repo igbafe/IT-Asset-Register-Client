@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "@/components/CustomFormField";
+import { toast } from "react-toastify";
 
 interface UpdateFormProps {
   laptop: {
@@ -58,12 +59,13 @@ const UpdateForm = ({ laptop }: UpdateFormProps) => {
       console.error("serialNumber is required to update laptop");
       return;
     }
-    try {
-      await updateLaptop(serialNumber, updates);
+    const result = await updateLaptop(serialNumber, updates);
+    if (result.success) {
       form.reset();
       setOpen(false);
-    } catch (error) {
-      console.error("Failed to update laptop:", error);
+      toast.success(result.message || "laptop updated successfully!");
+    } else {
+      toast.error(result.error || "Failed to update laptop");
     }
   };
 

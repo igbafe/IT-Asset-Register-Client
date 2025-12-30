@@ -10,8 +10,8 @@ export function InfoRow({ label, value }: InfoRowProps) {
 
   return (
     <div className="flex justify-between border-b py-2 text-sm">
-      <span className="text-gray-500">{label}</span>
-      <span className="font-medium text-gray-300">{value}</span>
+      <span className="text-gray-700">{label}</span>
+      <span className="font-medium text-gray-400">{value}</span>
     </div>
   );
 }

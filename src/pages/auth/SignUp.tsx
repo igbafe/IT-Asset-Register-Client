@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/useAuthStore";
 import { signupSchema, type SignupFormData } from "@/validation/authValidation";
-
+import { toast } from "react-toastify";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -34,7 +34,10 @@ const SignUp = () => {
   const onSubmit = async (data: SignupFormData) => {
     const result = await registerUser(data.name, data.email, data.password);
     if (result.success) {
-      navigate("/passkeyModal");
+      toast.success(result.message || "Registration successful!");
+      navigate("/dashboard", { state: { email: data.email } });
+    } else {
+      toast.error(result.error || "Registration failed");
     }
   };
 
