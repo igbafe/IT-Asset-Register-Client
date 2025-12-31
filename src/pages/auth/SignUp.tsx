@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
@@ -22,6 +22,9 @@ const SignUp = () => {
   const navigate = useNavigate();
   const { register: registerUser, loading } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/dashboard";
 
   const {
     register,
@@ -35,7 +38,7 @@ const SignUp = () => {
     const result = await registerUser(data.name, data.email, data.password);
     if (result.success) {
       toast.success(result.message || "Registration successful!");
-      navigate("/dashboard", { state: { email: data.email } });
+      navigate(from, { replace: true });
     } else {
       toast.error(result.error || "Registration failed");
     }
