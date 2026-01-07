@@ -12,8 +12,11 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import { Navigate } from "react-router-dom";
 import LaptopQRCodes from "./pages/LaptopQRCodes";
 import LaptopQRScanPage from "./pages/QRScanPage";
+import { useAuthInit } from "./hooks/useAuthInit";
+import AuthSuccess from "./pages/auth/authSucess";
 
 function App() {
+  useAuthInit();
   return (
     <div>
       <ToastContainer position="top-right" autoClose={3000} />
@@ -21,6 +24,7 @@ function App() {
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/auth/success" element={<AuthSuccess />} />
         {/* <Route path="/passkeyModal" element={<PasskeyModal />} /> */}
 
         {/* Redirect root to dashboard */}

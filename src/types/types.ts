@@ -4,6 +4,10 @@ interface User {
   name: string;
   email: string;
   avatar?: string;
+
+  picture?: string;
+  googleId?: string;
+  authProvider?: "local" | "google" | "both";
 }
 
 export interface AuthState {
@@ -13,6 +17,11 @@ export interface AuthState {
   register: (name: string, email: string, password: string) => Promise<Result>;
   login: (email: string, password: string) => Promise<Result>;
   logout: () => void;
+
+  loginWithGoogle: () => void;
+  setTokenFromOAuth: (token: string) => Promise<void>;
+  getCurrentUser: () => Promise<void>;
+  unlinkGoogle: () => Promise<Result>;
 }
 
 // laptop details

@@ -5,9 +5,21 @@ import type { AuthState } from "@/types/types";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+// Configure axios to include token in headers
+axios.interceptors.request.use((config) => {
+  const authStorage = localStorage.getItem("auth-storage");
+  if (authStorage) {
+    const { state } = JSON.parse(authStorage);
+    if (state?.token) {
+      config.headers.Authorization = `Bearer ${state.token}`;
+    }
+  }
+  return config;
+});
+
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       token: null,
       loading: false,
@@ -95,6 +107,96 @@ export const useAuthStore = create<AuthState>()(
           set({ loading: false });
         }
       },
+
+      loginWithGoogle: () => {
+        window.location.href = `${backendUrl}/user/google`;
+      },
+
+      setTokenFromOAuth: async (token: string) => {
+        set({ token, loading: true });
+
+        try {
+          // Fetch user data with the new token
+          await get().getCurrentUser();
+        } catch (error) {
+          console.error("Failed to fetch user data:", error);
+          set({ loading: false });
+        }
+      },
+
+      // NEW: Get current user data
+      getCurrentUser: async () => {
+        const { token } = get();
+
+        if (!token) {
+          set({ user: null, loading: false });
+          return;
+        }
+
+        set({ loading: true });
+
+        try {
+          const response = await axios.get(`${backendUrl}/user/me`);
+
+          set({
+            user: response.data.user,
+            loading: false,
+          });
+        } catch (error: unknown) {
+          // Token might be invalid, clear auth state
+          console.error("Failed to get current user:", error);
+          set({
+            user: null,
+            token: null,
+            loading: false,
+          });
+        }
+      },
+
+      unlinkGoogle: async () => {
+        const { token } = get();
+
+        if (!token) {
+          return {
+            success: false,
+            error: "Not authenticated",
+          };
+        }
+
+        set({ loading: true });
+
+        try {
+          const response = await axios.post(
+            `${backendUrl}/user/unlink-google`,
+            {}
+          );
+
+          // Refresh user data
+          await get().getCurrentUser();
+
+          return {
+            success: true,
+            message:
+              response.data.message || "Google account unlinked successfully",
+          };
+        } catch (error: unknown) {
+          if (axios.isAxiosError(error)) {
+            return {
+              success: false,
+              error:
+                error.response?.data?.message ||
+                "Failed to unlink Google account",
+            };
+          } else if (error instanceof Error) {
+            return { success: false, error: error.message };
+          } else {
+            return { success: false, error: "An unexpected error occurred" };
+          }
+        } finally {
+          set({ loading: false });
+        }
+      },
+
       logout: () => {
         set({ user: null, token: null });
         localStorage.removeItem("auth-storage");
