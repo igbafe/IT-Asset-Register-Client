@@ -23,49 +23,52 @@ import { Pencil } from "lucide-react";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "@/components/CustomFormField";
 import { toast } from "react-toastify";
+import {
+  brandOptions,
+  osOptions,
+  ramOptions,
+  romOptions,
+} from "@/constants/constants";
 
-interface UpdateFormProps {
-  laptop: {
-    systemName: string;
-    brand: string;
-    model: string;
-    serialNumber: string;
-    ram: string;
-    rom: string;
-    os: string;
-  };
-}
+type UpdateFormProps = {
+  serialNumber: string;
+};
 
-const UpdateForm = ({ laptop }: UpdateFormProps) => {
+const UpdateForm = ({ serialNumber }: UpdateFormProps) => {
   const { loading, updateLaptop } = useLaptopStore();
   const [open, setOpen] = useState(false);
 
   const form = useForm<UpdateDetailsFormData>({
     resolver: zodResolver(UpdateDetailsSchema),
     defaultValues: {
-      systemName: laptop.systemName,
-      brand: laptop.brand,
-      model: laptop.model,
-      serialNumber: laptop.serialNumber,
-      ram: laptop.ram,
-      rom: laptop.rom,
-      os: laptop.os,
+      systemName: "",
+      brand: "",
+      model: "",
+      ram: "",
+      rom: "",
+      os: "",
     },
   });
 
   const onSubmit = async (values: UpdateDetailsFormData) => {
-    const { serialNumber, ...updates } = values;
-    if (!serialNumber) {
-      console.error("serialNumber is required to update laptop");
-      return;
-    }
-    const result = await updateLaptop(serialNumber, updates);
-    if (result.success) {
-      form.reset();
-      setOpen(false);
-      toast.success(result.message || "laptop updated successfully!");
-    } else {
-      toast.error(result.error || "Failed to update laptop");
+    try {
+      const filteredValues = Object.fromEntries(
+        Object.entries(values).filter(([, value]) => value !== "")
+      );
+      // Check if at least one field has a value
+      if (Object.keys(filteredValues).length === 0) {
+        toast.error("Please fill in at least one field");
+        return;
+      }
+      const result = await updateLaptop(serialNumber, filteredValues);
+      if (result.success) {
+        form.reset();
+        setOpen(false);
+        toast.success(result.message || "laptop updated successfully!");
+      }
+    } catch (error) {
+      console.error("Update laptop failed", error);
+      toast.error("An error occurred while updating the laptop.");
     }
   };
 
@@ -76,10 +79,9 @@ const UpdateForm = ({ laptop }: UpdateFormProps) => {
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950 flex items-center gap-1.5"
+          className="h-8 text-emerald-600 hover:text-emerald-700 cursor-pointer hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950 flex items-center gap-1.5"
         >
           <Pencil size={14} />
-          Edit
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col p-0">
@@ -108,11 +110,12 @@ const UpdateForm = ({ laptop }: UpdateFormProps) => {
               {/* Brand and Model - Side by Side */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <CustomFormField
-                  fieldType={FormFieldType.INPUT}
+                  fieldType={FormFieldType.SELECT}
                   control={form.control}
                   name="brand"
                   label="Brand"
-                  placeholder="HP"
+                  placeholder="Select Brand"
+                  options={brandOptions}
                 />
                 <CustomFormField
                   fieldType={FormFieldType.INPUT}
@@ -123,41 +126,36 @@ const UpdateForm = ({ laptop }: UpdateFormProps) => {
                 />
               </div>
 
-              {/* Serial Number - Full Width (Disabled for updates) */}
-              <CustomFormField
-                fieldType={FormFieldType.INPUT}
-                control={form.control}
-                name="serialNumber"
-                label="Serial Number"
-                placeholder="SN12345678"
-                disabled={true}
-              />
+              {/* Serial Number - Full Width */}
 
               {/* RAM and ROM - Side by Side */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <CustomFormField
-                  fieldType={FormFieldType.INPUT}
+                  fieldType={FormFieldType.SELECT}
                   control={form.control}
                   name="ram"
                   label="RAM"
-                  placeholder="8GB"
+                  placeholder="Select RAM"
+                  options={ramOptions}
                 />
                 <CustomFormField
-                  fieldType={FormFieldType.INPUT}
+                  fieldType={FormFieldType.SELECT}
                   control={form.control}
                   name="rom"
                   label="Storage (ROM)"
-                  placeholder="256GB"
+                  placeholder="Select Storage"
+                  options={romOptions}
                 />
               </div>
 
               <div>
                 <CustomFormField
-                  fieldType={FormFieldType.INPUT}
+                  fieldType={FormFieldType.SELECT}
                   control={form.control}
                   name="os"
                   label="Operating System"
-                  placeholder="Windows 10"
+                  placeholder="Select OS"
+                  options={osOptions}
                 />
               </div>
             </div>

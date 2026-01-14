@@ -5,12 +5,12 @@ import { Avatar, AvatarFallback } from "./ui/avatar";
 export function UserAvatar() {
   const { user } = useAuthStore();
 
-  const initials = user?.name
-    ? user.name
-        .split(" ") // Split by space
-        .map((word) => word.charAt(0).toUpperCase()) // Take first letter of each
-        .join("") // Join together
-    : "U";
+  const initials =
+    user?.firstName && user?.lastName
+      ? `${user.firstName.charAt(0).toUpperCase()}${user.lastName
+          .charAt(0)
+          .toUpperCase()}`
+      : "U";
 
   return (
     <Avatar className="h-10 w-10 bg-[#4f46e5] flex items-center justify-center">

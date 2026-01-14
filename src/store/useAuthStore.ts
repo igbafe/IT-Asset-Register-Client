@@ -12,15 +12,16 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       loading: false,
 
-      register: async (name, email, password) => {
+      register: async (firstName, lastName, email, password) => {
         set({ loading: true });
         try {
           const response = await axios.post(`${backendUrl}/user/register`, {
-            name,
+            firstName,
+            lastName,
             email,
             password,
           });
-          set({ user: { _id: "", name, email } });
+          set({ user: { _id: "", firstName, lastName, email } });
           return {
             success: true,
             message: response.data.message || "Registration successful",

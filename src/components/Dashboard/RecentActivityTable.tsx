@@ -5,7 +5,8 @@ import { Link } from "react-router-dom";
 interface RecentActivity {
   _id: string;
   serialNumber: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   department: string;
   status: "current" | "previous";
   assignedDate: Date;
@@ -45,7 +46,7 @@ export default function RecentAssignmentsTable({
               </p>
             </div>
             <Link
-              to="/assignments"
+              to="/inventory"
               className="text-sm text-primary hover:underline flex items-center gap-1"
             >
               View All <ArrowRight className="w-4 h-4" />
@@ -86,7 +87,7 @@ export default function RecentAssignmentsTable({
                     </span>
                   </td>
                   <td className="py-4 px-6 font-medium text-foreground">
-                    {activity.fullName}
+                    {activity.firstName} {activity.lastName}
                   </td>
                   <td className="py-4 px-6 text-muted-foreground">
                     {activity.department}

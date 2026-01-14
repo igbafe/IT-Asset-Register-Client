@@ -1,4 +1,9 @@
-import { HardDrive, LayoutDashboard, LogOut, MonitorCog, UserPen } from "lucide-react";
+import {
+  HardDrive,
+  LayoutDashboard,
+  LogOut,
+  MonitorCog,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -14,7 +19,6 @@ import { ModeToggle } from "./mode-toggle";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 
-
 // Menu items.
 const items = [
   {
@@ -26,16 +30,6 @@ const items = [
     title: "Inventory",
     url: "/inventory",
     icon: HardDrive,
-  },
-  {
-    title: "Assignments",
-    url: "/assignments",
-    icon: UserPen,
-  },
-  {
-    title: "QR Codes",
-    url: "/laptopQrcodes",
-    icon: MonitorCog,
   },
 ];
 

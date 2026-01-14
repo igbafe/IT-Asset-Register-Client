@@ -237,7 +237,8 @@ export const useLaptopStore = create<LaptopStore>((set, get) => ({
         activities.push({
           _id: `${laptop._id}-current`,
           serialNumber: laptop.serialNumber,
-          fullName: laptop.currentUser.fullName,
+          firstName: laptop.currentUser.firstName,
+          lastName: laptop.currentUser.lastName,
           department: laptop.currentUser.department,
           status: "current",
           assignedDate: laptop.currentUser.assignedDate,
@@ -252,7 +253,8 @@ export const useLaptopStore = create<LaptopStore>((set, get) => ({
           activities.push({
             _id: `${laptop._id}-prev-${index}`,
             serialNumber: laptop.serialNumber,
-            fullName: prevUser.fullName,
+            firstName: prevUser.firstName,
+            lastName: prevUser.lastName,
             department: prevUser.department,
             status: "previous",
             assignedDate: prevUser.assignedDate,

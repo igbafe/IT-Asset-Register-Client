@@ -10,8 +10,9 @@ import { Input } from "./ui/input";
 import DatePicker from "react-datepicker";
 import { FormFieldType } from "@/validation/laptopDetailsvalidation";
 import "react-datepicker/dist/react-datepicker.css";
-import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Calendar } from "lucide-react";
+import type { SelectOption } from "@/types/types";
 
 interface CustomFormField {
   control: Control<any>;
@@ -21,6 +22,7 @@ interface CustomFormField {
   placeholder?: string;
   disabled?: boolean;
   dateFormat?: string;
+  options?: SelectOption[];
   children?: React.ReactNode;
   showTimeSelect?: boolean;
   renderSkeleton?: (field: any) => React.ReactNode;
@@ -90,6 +92,11 @@ const RenderField = ({
               position="popper"
               sideOffset={5}
             >
+              {props.options?.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
               {props.children}
             </SelectContent>
           </Select>

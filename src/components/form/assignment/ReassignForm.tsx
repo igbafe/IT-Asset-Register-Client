@@ -23,6 +23,7 @@ import {
 import { toast } from "react-toastify";
 import { useAssignmentStore } from "@/store/useAssignmentStore";
 import { useLaptopStore } from "@/store/useLaptopStore";
+import { departmentOptions } from "@/constants/constants";
 
 type ReassignFormProps = {
   systemName: string;
@@ -39,7 +40,8 @@ const ReassignForm = ({ systemName, serialNumber }: ReassignFormProps) => {
       reassignLaptopSchema
     ) as unknown as Resolver<ReassignLaptopFormData>,
     defaultValues: {
-      fullName: "",
+      firstName: "",
+      lastName: "",
       email: "",
       department: "",
     },
@@ -94,9 +96,17 @@ const ReassignForm = ({ systemName, serialNumber }: ReassignFormProps) => {
                 <CustomFormField
                   fieldType={FormFieldType.INPUT}
                   control={form.control}
-                  name="fullName"
-                  label="Full Name"
-                  placeholder="John Doe"
+                  name="firstName"
+                  label="First Name"
+                  placeholder="John"
+                />
+
+                <CustomFormField
+                  fieldType={FormFieldType.INPUT}
+                  control={form.control}
+                  name="lastName"
+                  label="Last Name"
+                  placeholder="Doe"
                 />
 
                 <CustomFormField
@@ -110,11 +120,12 @@ const ReassignForm = ({ systemName, serialNumber }: ReassignFormProps) => {
 
               {/* Department - Full Width */}
               <CustomFormField
-                fieldType={FormFieldType.INPUT}
+                fieldType={FormFieldType.SELECT}
                 control={form.control}
                 name="department"
                 label="Department"
-                placeholder="IT"
+                placeholder="Select Department"
+                options={departmentOptions}
               />
             </form>
           </Form>

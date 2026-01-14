@@ -9,62 +9,17 @@ export const columns: ColumnDef<LaptopDetails>[] = [
     header: "System Name",
   },
   {
-    accessorKey: "brand",
-    header: "Brand",
-  },
-  {
-    accessorKey: "model",
-    header: "Model",
-  },
-  {
     accessorKey: "serialNumber",
     header: "Serial Number",
   },
-  {
-    accessorKey: "ram",
-    header: "RAM (GB)",
-  },
-  {
-    accessorKey: "rom",
-    header: "Storage (GB)",
-  },
-  {
-    accessorKey: "os",
-    header: "Operating System",
+{
+    accessorKey: "model",
+    header: "Model",
   },
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => <LaptopStatusBadge status={row.getValue("status")} />,
-  },
-  {
-    accessorKey: "retirementDate",
-    header: "Retirement Date",
-    cell: ({ row }) => {
-      const value = row.getValue("retirementDate");
-
-      if (
-        !value ||
-        (typeof value !== "string" &&
-          typeof value !== "number" &&
-          !(value instanceof Date))
-      ) {
-        return "—";
-      }
-
-      const date = new Date(value);
-      if (isNaN(date.getTime())) return "—";
-
-      return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
-    },
-  },
-  {
-    accessorKey: "retirementNote",
-    header: "Retirement Note",
   },
   {
     id: "actions",
