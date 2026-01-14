@@ -23,6 +23,12 @@ import { Form } from "@/components/ui/form";
 import CustomFormField from "@/components/CustomFormField";
 import { useLaptopStore } from "@/store/useLaptopStore";
 import { toast } from "react-toastify";
+import {
+  brandOptions,
+  osOptions,
+  ramOptions,
+  romOptions,
+} from "@/constants/constants";
 
 const AddForm = () => {
   const { addLaptop, loading } = useLaptopStore();
@@ -56,7 +62,7 @@ const AddForm = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       {loading && <LoadingOverlay />}
       <DialogTrigger asChild>
-        <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
+        <Button className="bg-indigo-600 hover:bg-indigo-700 rounded-[50px] cursor-pointer text-white">
           Add Laptop
         </Button>
       </DialogTrigger>
@@ -74,22 +80,33 @@ const AddForm = () => {
           <Form {...form}>
             <div className="space-y-5">
               {/* System Name - Full Width */}
-              <CustomFormField
-                fieldType={FormFieldType.INPUT}
-                control={form.control}
-                name="systemName"
-                label="System Name"
-                placeholder="LNKLOP12633"
-              />
-
-              {/* Brand and Model - Side by Side */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <CustomFormField
                   fieldType={FormFieldType.INPUT}
                   control={form.control}
+                  name="systemName"
+                  label="System Name"
+                  placeholder="LNKLOP12633"
+                />
+
+                <CustomFormField
+                  fieldType={FormFieldType.INPUT}
+                  control={form.control}
+                  name="serialNumber"
+                  label="Serial Number"
+                  placeholder="SN12345678"
+                />
+              </div>
+
+              {/* Brand and Model - Side by Side */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <CustomFormField
+                  fieldType={FormFieldType.SELECT}
+                  control={form.control}
                   name="brand"
                   label="Brand"
-                  placeholder="HP"
+                  placeholder="Select Brand"
+                  options={brandOptions}
                 />
                 <CustomFormField
                   fieldType={FormFieldType.INPUT}
@@ -101,39 +118,35 @@ const AddForm = () => {
               </div>
 
               {/* Serial Number - Full Width */}
-              <CustomFormField
-                fieldType={FormFieldType.INPUT}
-                control={form.control}
-                name="serialNumber"
-                label="Serial Number"
-                placeholder="SN12345678"
-              />
 
               {/* RAM and ROM - Side by Side */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <CustomFormField
-                  fieldType={FormFieldType.INPUT}
+                  fieldType={FormFieldType.SELECT}
                   control={form.control}
                   name="ram"
                   label="RAM"
-                  placeholder="8GB"
+                  placeholder="Select RAM"
+                  options={ramOptions}
                 />
                 <CustomFormField
-                  fieldType={FormFieldType.INPUT}
+                  fieldType={FormFieldType.SELECT}
                   control={form.control}
                   name="rom"
                   label="Storage (ROM)"
-                  placeholder="256GB"
+                  placeholder="Select Storage"
+                  options={romOptions}
                 />
               </div>
 
               <div>
                 <CustomFormField
-                  fieldType={FormFieldType.INPUT}
+                  fieldType={FormFieldType.SELECT}
                   control={form.control}
                   name="os"
                   label="Operating System"
-                  placeholder="Windows 10"
+                  placeholder="Select OS"
+                  options={osOptions}
                 />
               </div>
             </div>

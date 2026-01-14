@@ -5,7 +5,8 @@ import { TrendingUp, ArrowRight, Laptop as LaptopIcon } from "lucide-react";
 interface RecentActivity {
   _id: string;
   serialNumber: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   department: string;
   status: "current" | "previous";
   assignedDate: Date;
@@ -64,7 +65,7 @@ export default function RecentActivitySection({
               </div>
             </div>
             <Link
-              to="/assignments"
+              to="/inventory"
               className="text-sm text-primary hover:underline flex items-center gap-1"
             >
               View All <ArrowRight className="w-4 h-4" />
@@ -85,8 +86,8 @@ export default function RecentActivitySection({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <p className="font-semibold text-foreground truncate">
-                        {activity.fullName}
+                      <p className="font-semibold text-foreground capitalize truncate">
+                        {activity.firstName} {activity.lastName}
                       </p>
                       <span className="text-xs text-muted-foreground">
                         ({activity.department})
