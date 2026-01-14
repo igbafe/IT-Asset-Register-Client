@@ -25,6 +25,7 @@ import { Form } from "@/components/ui/form";
 import { useAssignmentStore } from "@/store/useAssignmentStore";
 import { useLaptopStore } from "@/store/useLaptopStore";
 import { toast } from "react-toastify";
+import { departmentOptions } from "@/constants/constants";
 
 const UpdateAssignmentForm = (LaptopId: string) => {
   const { updateCurrentUser, loading } = useAssignmentStore();
@@ -36,7 +37,8 @@ const UpdateAssignmentForm = (LaptopId: string) => {
       updateCurrentUserSchema
     ) as unknown as Resolver<UpdateCurrentUserFormData>,
     defaultValues: {
-      fullName: "",
+      firstName: "",
+      lastName: "",
       email: "",
       department: "",
     },
@@ -56,7 +58,7 @@ const UpdateAssignmentForm = (LaptopId: string) => {
 
       // Check if at least one field has a value
       if (Object.keys(filteredValues).length === 0) {
-        alert("Please fill in at least one field");
+        toast.error("Please fill in at least one field");
         return;
       }
 
@@ -103,9 +105,17 @@ const UpdateAssignmentForm = (LaptopId: string) => {
                 <CustomFormField
                   fieldType={FormFieldType.INPUT}
                   control={form.control}
-                  name="fullName"
-                  label="Full Name"
-                  placeholder="John Doe"
+                  name="firstName"
+                  label="First Name"
+                  placeholder="John"
+                />
+
+                <CustomFormField
+                  fieldType={FormFieldType.INPUT}
+                  control={form.control}
+                  name="lastName"
+                  label="Last Name"
+                  placeholder="Doe"
                 />
 
                 <CustomFormField
@@ -116,15 +126,14 @@ const UpdateAssignmentForm = (LaptopId: string) => {
                   placeholder="john.doe@example.com"
                 />
               </div>
-
-              {/* Department & Serial Number - Side by Side */}
               <div>
                 <CustomFormField
-                  fieldType={FormFieldType.INPUT}
+                  fieldType={FormFieldType.SELECT}
                   control={form.control}
                   name="department"
                   label="Department"
-                  placeholder="IT"
+                  placeholder="Select Department"
+                  options={departmentOptions}
                 />
               </div>
             </div>

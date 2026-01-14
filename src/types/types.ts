@@ -1,7 +1,8 @@
 // Authstate types
 interface User {
   _id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   avatar?: string;
 }
@@ -10,7 +11,12 @@ export interface AuthState {
   user: User | null;
   token: string | null;
   loading: boolean;
-  register: (name: string, email: string, password: string) => Promise<Result>;
+  register: (
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string
+  ) => Promise<Result>;
   login: (email: string, password: string) => Promise<Result>;
   logout: () => void;
 }
@@ -35,7 +41,8 @@ export interface LaptopDetails {
 }
 
 export interface LaptopUser {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   department: string;
   assignedDate: Date;
@@ -55,10 +62,18 @@ interface Result {
   error?: string;
 }
 
+interface LaptopResponse {
+  success: boolean;
+  data?: LaptopQRCode | null;
+  message?: string;
+  error?: string;
+}
+
 export interface RecentActivity {
   _id: string;
   serialNumber: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   department: string;
   status: "current" | "previous";
   assignedDate: Date;
@@ -90,7 +105,8 @@ export interface LaptopStore {
 
 // Assignment types
 interface IUser {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   department: string;
   assignedDate?: string;
@@ -122,7 +138,8 @@ export interface Assignment {
   systemName: string;
   serialNumber: string;
   currentUser: {
-    fullName: string;
+    firstName: string;
+    lastName: string;
     email: string;
     department: string;
     assignedDate: string;
@@ -134,13 +151,15 @@ export interface AssignmentDetails {
   systemName: string;
   serialNumber: string;
   currentUser: {
-    fullName: string;
+    firstName: string;
+    lastName: string;
     email: string;
     department: string;
     assignedDate: string;
   } | null;
   previousUser: {
-    fullName: string;
+    firstName: string;
+    lastName: string;
     email: string;
     department: string;
     assignedDate: string;
@@ -189,13 +208,21 @@ export interface LaptopQRState {
   // State
   qrCodes: LaptopQRCode[];
   selectedQRCode: LaptopQRCode | null;
+  modalQRCode: LaptopQRCode | null;
   loading: boolean;
   error: string | null;
 
   // Actions
   fetchAllQRCodes: () => Promise<Result>;
-  fetchQRCodeBySerial: (serialNumber: string) => Promise<Result>;
+  fetchQRCodeBySerial: (serialNumber: string) => Promise<LaptopResponse>;
+  fetchModalQRCode: (serialNumber: string) => Promise<Result>;
   downloadQRCode: (serialNumber: string) => Promise<void>;
   clearError: () => void;
   setSelectedQRCode: (qrCode: LaptopQRCode | null) => void;
+  resetSelectedQRCode: () => void;
+}
+
+export interface SelectOption {
+  value: string;
+  label: string;
 }

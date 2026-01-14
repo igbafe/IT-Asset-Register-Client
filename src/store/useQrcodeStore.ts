@@ -15,6 +15,7 @@ export const useLaptopQRStore = create<LaptopQRState>((set) => ({
   selectedQRCode: null,
   loading: false,
   error: null,
+  modalQRCode: null,
 
   // Fetch all QR codes
   fetchAllQRCodes: async () => {
@@ -73,6 +74,56 @@ export const useLaptopQRStore = create<LaptopQRState>((set) => ({
       return {
         success: true,
         message: response.data.message || "Registration successful",
+        data: data.data!,
+      };
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const backendMessage = error.response?.data?.message;
+        const zodErrors = error.response?.data?.errors;
+
+        if (zodErrors && Array.isArray(zodErrors)) {
+          const firstError =
+            typeof zodErrors[0] === "string"
+              ? zodErrors[0]
+              : zodErrors[0].message;
+          return {
+            success: false,
+            error: firstError || "Validation error",
+            data: null,
+          };
+        } else {
+          return {
+            success: false,
+            error: backendMessage || "Failed to fetch QR code",
+            data: null,
+          };
+        }
+      } else if (error instanceof Error) {
+        return { success: false, error: error.message, data: null };
+      } else {
+        return {
+          success: false,
+          error: "An unexpected error occurred",
+          data: null,
+        };
+      }
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  fetchModalQRCode: async (serialNumber: string) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axiosInstance.get<SingleQRCodeResponse>(
+        `${backendUrl}/laptops/${serialNumber}/qr`
+      );
+      const data = response.data;
+
+      set({ modalQRCode: data.data, loading: false });
+      return {
+        success: true,
+        message: response.data.message || "Registration successful",
       };
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -124,8 +175,6 @@ export const useLaptopQRStore = create<LaptopQRState>((set) => ({
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-
-
       set({ loading: false });
     } catch (error) {
       set({
@@ -140,4 +189,5 @@ export const useLaptopQRStore = create<LaptopQRState>((set) => ({
 
   // Set selected QR code
   setSelectedQRCode: (qrCode) => set({ selectedQRCode: qrCode }),
+  resetSelectedQRCode: () => set({ selectedQRCode: null }),
 }));
