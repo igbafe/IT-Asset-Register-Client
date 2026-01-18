@@ -28,7 +28,7 @@ export default function ProtectedRoute() {
   }
 
   // Redirect to login if not authenticated, save the location they tried to access
-  if (!token) {
+  if (!token ) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 

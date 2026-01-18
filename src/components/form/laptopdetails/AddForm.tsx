@@ -30,6 +30,7 @@ import {
   romOptions,
 } from "@/constants/constants";
 
+
 const AddForm = () => {
   const { addLaptop, loading } = useLaptopStore();
   const [open, setOpen] = useState(false);
@@ -149,6 +150,7 @@ const AddForm = () => {
                   options={osOptions}
                 />
               </div>
+              
             </div>
           </Form>
         </div>
