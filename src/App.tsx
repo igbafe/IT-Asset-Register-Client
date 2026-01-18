@@ -10,6 +10,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import { Navigate } from "react-router-dom";
 
 import LaptopQRScanPage from "./pages/QRScanPage";
+import SettingsPage from "./pages/Settings";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<LaptopDashboard />} />
           <Route path="/inventory" element={<Inventory />} />
+          <Route path="/settings" element={<SettingsPage />} />
 
           <Route
             path="/laptops/qr/:serialNumber"
