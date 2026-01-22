@@ -23,7 +23,7 @@ import {
 import { LaptopStatus } from "@/types/types";
 import type { LaptopQRCode } from "@/types/types";
 import { useLaptopQRStore } from "@/store/useQrcodeStore";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 type laptopdetailsprops = {
   serialNumber?: string;
@@ -35,7 +35,7 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
   const [open, setOpen] = useState(false);
   const [qrData, setQrData] = useState<LaptopQRCode | null>(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     if (!open || !serialNumber) return;
@@ -211,7 +211,7 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
                       >
                         Download QR Code
                       </Button>
-                      <Button
+                      {/* <Button
                         onClick={() => {
                           if (qrData) {
                             navigate(`/laptops/qr/${qrData.serialNumber}`);
@@ -220,7 +220,7 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
                         className="w-full"
                       >
                         Open Scan Page
-                      </Button>
+                      </Button> */}
                     </div>
                   </div>
                 </CardContent>

@@ -16,24 +16,21 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "@/components/CustomFormField";
 import { useLaptopStore } from "@/store/useLaptopStore";
 import { toast } from "react-toastify";
-import {
-  brandOptions,
-  osOptions,
-  ramOptions,
-  romOptions,
-} from "@/constants/constants";
-
+import { osOptions, ramOptions, romOptions } from "@/constants/constants";
+import useBrandStore from "@/store/useBrandStore";
 
 const AddForm = () => {
   const { addLaptop, loading } = useLaptopStore();
+  const { fetchBrands, brand } = useBrandStore();
   const [open, setOpen] = useState(false);
+  const [selectedBrand, setSelectedBrand] = useState<string>("");
 
   const form = useForm<addLaptopFormData>({
     resolver: zodResolver(addLaptopSchema),
@@ -47,6 +44,44 @@ const AddForm = () => {
       os: "",
     },
   });
+
+  // Create brand options from the store
+  const brandOptions = useMemo(() => {
+    return brand.map((b) => ({
+      value: b.brandName,
+      label: b.brandName,
+    }));
+  }, [brand]);
+
+  // Create model options based on selected brand
+  const modelOptions = useMemo(() => {
+    if (!selectedBrand) return [];
+    const selectedBrandData = brand.find((b) => b.brandName === selectedBrand);
+    return (
+      selectedBrandData?.models.map((model) => ({
+        value: model,
+        label: model,
+      })) || []
+    );
+  }, [selectedBrand, brand]);
+
+  // Watch for brand changes
+  const watchedBrand = form.watch("brand");
+
+  useEffect(() => {
+    if (watchedBrand !== selectedBrand) {
+      setSelectedBrand(watchedBrand);
+      // Reset model when brand changes
+      if (form.getValues("model")) {
+        form.setValue("model", "");
+      }
+    }
+  }, [watchedBrand, selectedBrand, form]);
+
+  useEffect(() => {
+    if (!open) return;
+    fetchBrands();
+  }, [open]);
 
   const onSubmit = async (values: addLaptopFormData) => {
     const result = await addLaptop(values);
@@ -110,11 +145,12 @@ const AddForm = () => {
                   options={brandOptions}
                 />
                 <CustomFormField
-                  fieldType={FormFieldType.INPUT}
+                  fieldType={FormFieldType.SELECT}
                   control={form.control}
                   name="model"
                   label="Model"
-                  placeholder="EliteBook 840"
+                  placeholder="Select Model"
+                  options={modelOptions}
                 />
               </div>
 
@@ -150,7 +186,6 @@ const AddForm = () => {
                   options={osOptions}
                 />
               </div>
-              
             </div>
           </Form>
         </div>
