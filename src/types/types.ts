@@ -226,3 +226,25 @@ export interface SelectOption {
   value: string;
   label: string;
 }
+
+export interface Brand {
+  _id?: string;
+  brandName: string;
+  models: string[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface BrandState {
+  brand: Brand[];
+  loading: boolean;
+  error: string | null;
+
+  createBrand: (brandName: string, models: string[]) => Promise<Result>;
+  fetchBrands: () => Promise<Result>;
+  fetchModelsByBrand: (brandName: string) => Promise<Result>;
+  addModelToBrand: (brandName: string, model: string) => Promise<Result>;
+  removeModelFromBrand: (brandName: string, model: string) => Promise<Result>;
+  deleteBrand: (brandName: string) => Promise<Result>;
+  setBrand: (brands: Brand[]) => void;
+}

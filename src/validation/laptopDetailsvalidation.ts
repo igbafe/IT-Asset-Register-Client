@@ -40,3 +40,18 @@ export enum FormFieldType {
   SELECT = "select",
   SKELETON = "skeleton",
 }
+
+export const brandModelSchema = z.object({
+  brandName: z.string().min(1, { message: "Brand is required" }),
+  models: z
+    .array(z.string().min(1, { message: "Model cannot be empty" }))
+    .min(1, { message: "At least one model is required" }),
+});
+
+export type BrandModelFormData = z.infer<typeof brandModelSchema>;
+
+export const addModelSchema = z.object({
+  models: z.array(z.string()).min(1, "At least one model is required"),
+});
+
+export type AddModelFormData = z.infer<typeof addModelSchema>;

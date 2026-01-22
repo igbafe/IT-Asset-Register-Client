@@ -31,6 +31,11 @@ const items = [
     url: "/inventory",
     icon: HardDrive,
   },
+  {
+    title: "Settings",
+    url: "/settings",
+    icon: MonitorCog,
+  },
 ];
 
 export function AppSidebar() {

@@ -8,7 +8,6 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    // ✅ Get token from Zustand store
     const token = useAuthStore.getState().token;
 
     if (token) {
@@ -16,7 +15,7 @@ axiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 // Optional: Handle token expiration
 axiosInstance.interceptors.response.use(
@@ -26,11 +25,10 @@ axiosInstance.interceptors.response.use(
       // Token expired or invalid
       localStorage.removeItem("token");
       toast.error("Session expired. Please login again.");
-      // Redirect to login or refresh token
-      // window.location.href = "/login";
+      window.location.href = "/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosInstance;

@@ -1,4 +1,5 @@
 import { LaptopStatus } from "@/types/types";
+import { Laptop } from "lucide-react";
 
 // Status filter options
 export const statusOptions = [
@@ -47,4 +48,12 @@ export const departmentOptions = [
   { value: "Technical", label: "Technical" },
   { value: "Investment", label: "Investment" },
   { value: "Project Management", label: "Project Management" },
+];
+
+export const tabs = [
+  { id: "brands-models", label: "Brands & Models", icon: Laptop },
+  // Add more tabs here easily:
+  // { id: 'departments', label: 'Departments', icon: Building2 },
+  // { id: 'users', label: 'Users', icon: Users },
+  // { id: 'storage', label: 'Storage Options', icon: HardDrive },
 ];
