@@ -1,7 +1,6 @@
 // store/laptopQRStore.ts
 import { create } from "zustand";
-import { backendUrl } from "./useAuthStore";
-import axiosInstance from "@/lib/axiosInstance";
+import axiosInstance, { backendUrl } from "@/lib/axiosInstance";
 import type {
   LaptopQRState,
   QRCodeResponse,

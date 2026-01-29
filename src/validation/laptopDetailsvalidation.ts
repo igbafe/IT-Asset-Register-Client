@@ -8,6 +8,7 @@ export const addLaptopSchema = z.object({
   ram: z.string().min(1, { message: "RAM is required" }),
   rom: z.string().min(1, { message: "ROM is required" }),
   os: z.string().min(1, { message: "Operating system is required" }),
+  purchaseDate: z.date({ message: "Purchase date is required" }),
 });
 
 export type addLaptopFormData = z.infer<typeof addLaptopSchema>;
@@ -28,30 +29,14 @@ export const UpdateDetailsSchema = z.object({
     .min(1, "Operating system is required")
     .or(z.literal(""))
     .optional(),
+  purchaseDate: z
+    .date()
+    .min(1, "Purchase date is required")
+    .or(z.literal(""))
+    .optional(),
 });
-// ...existing code...
 
 export type UpdateDetailsFormData = z.infer<typeof UpdateDetailsSchema>;
 
-export enum FormFieldType {
-  INPUT = "input",
-  TEXTAREA = "textarea",
-  DATE_PICKER = "datePicker",
-  SELECT = "select",
-  SKELETON = "skeleton",
-}
 
-export const brandModelSchema = z.object({
-  brandName: z.string().min(1, { message: "Brand is required" }),
-  models: z
-    .array(z.string().min(1, { message: "Model cannot be empty" }))
-    .min(1, { message: "At least one model is required" }),
-});
 
-export type BrandModelFormData = z.infer<typeof brandModelSchema>;
-
-export const addModelSchema = z.object({
-  models: z.array(z.string()).min(1, "At least one model is required"),
-});
-
-export type AddModelFormData = z.infer<typeof addModelSchema>;

@@ -34,8 +34,8 @@ export function LaptopStatusBadge({ status }: LaptopStatusBadgeProps) {
       bg: "bg-yellow-100 dark:bg-yellow-900/40",
       text: "text-yellow-700 dark:text-yellow-400",
     },
-    retired: {
-      label: "Retired",
+    decommissioned: {
+      label: "Decommissioned",
       icon: XCircle,
       bg: "bg-gray-100 dark:bg-gray-800/60",
       text: "text-gray-700 dark:text-gray-400",

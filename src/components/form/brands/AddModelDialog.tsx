@@ -22,7 +22,7 @@ import { useForm } from "react-hook-form";
 import {
   addModelSchema,
   type AddModelFormData,
-} from "@/validation/laptopDetailsvalidation";
+} from "@/validation/brandSetting";
 
 interface AddModelDialogProps {
   open: boolean;

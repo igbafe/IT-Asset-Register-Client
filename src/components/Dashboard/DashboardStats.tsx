@@ -10,14 +10,14 @@ interface DashboardStatsProps {
   totalLaptops: number;
   assignedCount: number;
   availableCount: number;
-  retiredCount: number;
+  decommissionedCount: number;
 }
 
 export default function DashboardStats({
   totalLaptops,
   assignedCount,
   availableCount,
-  retiredCount,
+  decommissionedCount,
 }: DashboardStatsProps) {
   return (
     <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
@@ -41,8 +41,8 @@ export default function DashboardStats({
       />
       <StatsCard
         type="retired"
-        count={retiredCount}
-        label="Retired Laptops"
+        count={decommissionedCount}
+        label="Decommissioned Laptops"
         Icon={XCircle}
       />
     </section>

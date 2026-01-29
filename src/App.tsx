@@ -11,8 +11,16 @@ import { Navigate } from "react-router-dom";
 
 import LaptopQRScanPage from "./pages/QRScanPage";
 import SettingsPage from "./pages/Settings";
+import { useAuthStore } from "./store/useAuthStore";
+import { useEffect } from "react";
 
 function App() {
+  const checkAuth = useAuthStore((state) => state.checkAuth);
+
+  useEffect(() => {
+    // Check if user is authenticated when app loads
+    checkAuth();
+  }, [checkAuth]);
   return (
     <div>
       <ToastContainer position="top-right" autoClose={3000} />

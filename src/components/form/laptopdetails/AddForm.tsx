@@ -1,6 +1,5 @@
 import {
   addLaptopSchema,
-  FormFieldType,
   type addLaptopFormData,
 } from "@/validation/laptopDetailsvalidation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +22,7 @@ import { Form } from "@/components/ui/form";
 import CustomFormField from "@/components/CustomFormField";
 import { useLaptopStore } from "@/store/useLaptopStore";
 import { toast } from "react-toastify";
-import { osOptions, ramOptions, romOptions } from "@/constants/constants";
+import { FormFieldType, osOptions, ramOptions, romOptions } from "@/constants/constants";
 import useBrandStore from "@/store/useBrandStore";
 
 const AddForm = () => {
@@ -42,6 +41,7 @@ const AddForm = () => {
       ram: "",
       rom: "",
       os: "",
+      purchaseDate: new Date(),
     },
   });
 
@@ -176,7 +176,14 @@ const AddForm = () => {
                 />
               </div>
 
-              <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <CustomFormField
+                  fieldType={FormFieldType.DATE_PICKER}
+                  control={form.control}
+                  name="purchaseDate"
+                  label="Purchase Date"
+                  placeholder="Select Purchase Date"
+                />
                 <CustomFormField
                   fieldType={FormFieldType.SELECT}
                   control={form.control}
