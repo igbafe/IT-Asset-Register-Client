@@ -7,7 +7,7 @@ export const statusOptions = [
   { value: LaptopStatus.AVAILABLE, label: "Available" },
   { value: LaptopStatus.ASSIGNED, label: "Assigned" },
   { value: LaptopStatus.RETURNED, label: "Returned" },
-  { value: LaptopStatus.RETIRED, label: "Retired" },
+  { value: LaptopStatus.DECOMMISSIONED, label: "Decommissioned" },
 ];
 
 export const brandOptions = [
@@ -57,3 +57,12 @@ export const tabs = [
   // { id: 'users', label: 'Users', icon: Users },
   // { id: 'storage', label: 'Storage Options', icon: HardDrive },
 ];
+
+export enum FormFieldType {
+  INPUT = "input",
+  TEXTAREA = "textarea",
+  DATE_PICKER = "datePicker",
+  SELECT = "select",
+  SKELETON = "skeleton",
+}
+

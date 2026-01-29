@@ -81,6 +81,22 @@ export default function LaptopQRScanPage() {
           <InfoRow label="RAM" value={selectedQRCode.ram} />
           <InfoRow label="Storage" value={selectedQRCode.rom} />
           <InfoRow label="Operating System" value={selectedQRCode.os} />
+          <InfoRow
+            label="Purchase Date"
+            value={
+              selectedQRCode.purchaseDate
+                ? new Date(selectedQRCode.purchaseDate).toLocaleDateString()
+                : "N/A"
+            }
+          />
+          <InfoRow
+            label="End of Life Date"
+            value={
+              selectedQRCode.endOfLifeDate
+                ? new Date(selectedQRCode.endOfLifeDate).toLocaleDateString()
+                : "N/A"
+            }
+          />
 
           <div className="pt-2">
             <InfoRow
@@ -95,11 +111,11 @@ export default function LaptopQRScanPage() {
             />
           </div>
 
-          {selectedQRCode.retirementDate && (
+          {selectedQRCode.decommissionDate && (
             <InfoRow
-              label="Retirement Date"
+              label="Decommission Date"
               value={new Date(
-                selectedQRCode.retirementDate
+                selectedQRCode.decommissionDate,
               ).toLocaleDateString()}
             />
           )}
@@ -128,7 +144,7 @@ export default function LaptopQRScanPage() {
             <InfoRow
               label="Assigned Date"
               value={new Date(
-                selectedQRCode.currentUser.assignedDate
+                selectedQRCode.currentUser.assignedDate,
               ).toLocaleDateString()}
             />
           </div>
@@ -218,7 +234,7 @@ export default function LaptopQRScanPage() {
                                     year: "numeric",
                                     month: "short",
                                     day: "numeric",
-                                  }
+                                  },
                                 )}
                               </p>
                             </div>
@@ -235,7 +251,7 @@ export default function LaptopQRScanPage() {
                                 </p>
                                 <p className="text-sm font-semibold text-foreground">
                                   {new Date(
-                                    user.returnedDate
+                                    user.returnedDate,
                                   ).toLocaleDateString("en-US", {
                                     year: "numeric",
                                     month: "short",

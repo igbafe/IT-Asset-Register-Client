@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Sidebar";
 import { UserAvatar } from "@/components/Avatar";
@@ -12,117 +12,22 @@ import {
 } from "@/components/ui/card";
 import { Package } from "lucide-react";
 import useBrandStore from "@/store/useBrandStore";
-import { toast } from "react-toastify";
+
 import CreateBrand from "@/components/form/brands/createBrand";
-import { BrandCard } from "@/components/tabs/BrandCard";
-import { AddModelDialog } from "@/components/tabs/AddModelDialog";
-import { DeleteConfirmationDialog } from "@/components/tabs/DeleteConfirmation";
+import { columns } from "@/components/table/brands/brandColumns";
+import { DataTable } from "@/components/table/data-table";
 
 const SettingsPage = () => {
   const {
     brand,
     fetchBrands,
-    deleteBrand,
-    removeModelFromBrand,
-    addModelToBrand,
+
     loading,
   } = useBrandStore();
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [addModelDialogOpen, setAddModelDialogOpen] = useState(false);
-  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
-  const [deleteType, setDeleteType] = useState<"brand" | "model">("brand");
-  const [selectedModel, setSelectedModel] = useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchBrands();
   }, [fetchBrands]);
-
-  const handleDeleteBrand = (brandName: string) => {
-    setSelectedBrand(brandName);
-    setDeleteType("brand");
-    setDeleteDialogOpen(true);
-  };
-
-  const handleDeleteModel = (brandName: string, model: string) => {
-    setSelectedBrand(brandName);
-    setSelectedModel(model);
-    setDeleteType("model");
-    setDeleteDialogOpen(true);
-  };
-
-  const handleAddModelClick = (brandName: string) => {
-    setSelectedBrand(brandName);
-    setAddModelDialogOpen(true);
-  };
-
-  const handleAddModel = async (models: string[]) => {
-    if (!selectedBrand || models.length === 0) return;
-
-    try {
-      // Add each model one by one
-      let successCount = 0;
-
-      for (const model of models) {
-        const result = await addModelToBrand(selectedBrand, model);
-        if (result.success) {
-          successCount++;
-        } else {
-          toast.error(`Failed to add ${model}: ${result.error}`);
-        }
-      } 
-      if (successCount > 0) {
-        toast.success(
-          `Successfully added ${successCount} model${successCount > 1 ? "s" : ""}`,
-        );
-        await fetchBrands();
-        setAddModelDialogOpen(false);
-      }
-    } catch (error) {
-      toast.error("An error occurred while adding models");
-      console.error("Add model error:", error);
-    }
-  };
-
-  const confirmDelete = async () => {
-    if (!selectedBrand) return;
-
-    setIsDeleting(true);
-    try {
-      if (deleteType === "brand") {
-        const result = await deleteBrand(selectedBrand);
-        if (result.success) {
-          toast.success(result.message || "Brand deleted successfully");
-          // Refetch to get fresh data
-          await fetchBrands();
-          setDeleteDialogOpen(false);
-          setSelectedBrand(null);
-        } else {
-          toast.error(result.error || "Failed to delete brand");
-        }
-      } else if (deleteType === "model" && selectedModel) {
-        const result = await removeModelFromBrand(selectedBrand, selectedModel);
-        if (result.success) {
-          toast.success(result.message || "Model removed successfully");
-          // Refetch to get fresh data
-          await fetchBrands();
-          setDeleteDialogOpen(false);
-          setSelectedBrand(null);
-          setSelectedModel(null);
-        } else {
-          toast.error(result.error || "Failed to remove model");
-        }
-      }
-    } catch (error) {
-      toast.error("An error occurred during deletion");
-      console.error("Delete error:", error);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  // Ensure brand is always an array
-  const brandList = Array.isArray(brand) ? brand : [];
 
   return (
     <SidebarProvider>
@@ -150,21 +55,26 @@ const SettingsPage = () => {
               </TabsList>
 
               <TabsContent value="brands" className="space-y-6 mt-6">
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <h2 className="text-2xl font-semibold">Brand Management</h2>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <h2 className="text-xl sm:text-2xl font-semibold">
+                      Brand Management
+                    </h2>
+                    <p className="text-sm text-muted-foreground mt-1 max-w-xl">
                       Add, edit, and manage laptop brands and models
                     </p>
                   </div>
-                  <CreateBrand />
+
+                  <div className="self-start sm:self-auto">
+                    <CreateBrand />
+                  </div>
                 </div>
 
                 {loading ? (
                   <div className="flex justify-center py-12">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
                   </div>
-                ) : brandList.length === 0 ? (
+                ) : brand.length === 0 ? (
                   <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12">
                       <Package className="h-12 w-12 text-muted-foreground mb-4" />
@@ -175,17 +85,8 @@ const SettingsPage = () => {
                     </CardContent>
                   </Card>
                 ) : (
-                  <div className="space-y-4">
-                    {brandList.map((item) => (
-                      <BrandCard
-                        key={item.brandName}
-                        brandName={item.brandName}
-                        models={item.models}
-                        onDeleteBrand={handleDeleteBrand}
-                        onDeleteModel={handleDeleteModel}
-                        onAddModel={handleAddModelClick}
-                      />
-                    ))}
+                  <div className="mt-6">
+                    <DataTable columns={columns} data={brand} />
                   </div>
                 )}
               </TabsContent>
@@ -225,23 +126,6 @@ const SettingsPage = () => {
           </main>
         </div>
       </div>
-
-      <AddModelDialog
-        open={addModelDialogOpen}
-        onOpenChange={setAddModelDialogOpen}
-        brandName={selectedBrand}
-        onAddModel={handleAddModel}
-      />
-
-      <DeleteConfirmationDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        deleteType={deleteType}
-        brandName={selectedBrand}
-        modelName={selectedModel}
-        onConfirm={confirmDelete}
-        isDeleting={isDeleting}
-      />
     </SidebarProvider>
   );
 };

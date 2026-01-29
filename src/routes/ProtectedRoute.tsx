@@ -4,19 +4,22 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useEffect, useState } from "react";
 
 export default function ProtectedRoute() {
-  const { token } = useAuthStore();
+  const { user, checkAuth } = useAuthStore();
   const location = useLocation();
-  const [isChecking, setIsChecking] = useState(true);
+  const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsChecking(false);
-    }, 100);
+    const verify = async () => {
+      if (user) {
+         await checkAuth();
+      }
+      setIsVerifying(false);
+    };
 
-    return () => clearTimeout(timer);
+    verify();
   }, []);
 
-  if (isChecking) {
+  if (isVerifying) {
     return (
       <div className="flex items-center justify-center h-screen bg-background">
         <div className="flex flex-col items-center gap-4">
@@ -27,8 +30,7 @@ export default function ProtectedRoute() {
     );
   }
 
-  // Redirect to login if not authenticated, save the location they tried to access
-  if (!token ) {
+  if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 

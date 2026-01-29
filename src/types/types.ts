@@ -1,5 +1,5 @@
 // Authstate types
-interface User {
+export interface User {
   _id: string;
   firstName: string;
   lastName: string;
@@ -9,16 +9,24 @@ interface User {
 
 export interface AuthState {
   user: User | null;
-  token: string | null;
   loading: boolean;
+  error: string | null;
+
+  // Actions
+  checkAuth: () => Promise<boolean>;
+  login: (
+    email: string,
+    password: string,
+  ) => Promise<{ success: boolean; message?: string; error?: string }>;
   register: (
     firstName: string,
     lastName: string,
     email: string,
-    password: string
-  ) => Promise<Result>;
-  login: (email: string, password: string) => Promise<Result>;
-  logout: () => void;
+    password: string,
+  ) => Promise<{ success: boolean; message?: string; error?: string }>;
+  logout: () => Promise<void>;
+  clearError: () => void;
+  isAuthenticated: () => boolean;
 }
 
 // laptop details
@@ -36,8 +44,10 @@ export interface LaptopDetails {
   status?: LaptopStatus;
   createdAt?: string;
   updatedAt?: string;
-  retirementDate?: Date;
-  retirementNote?: string;
+  purchaseDate: Date;
+  endOfLifeDate?: Date;
+  decommissionDate?: Date;
+  decommissionNote?: string;
 }
 
 export interface LaptopUser {
@@ -53,7 +63,7 @@ export enum LaptopStatus {
   AVAILABLE = "available", // Just added, not assigned yet
   ASSIGNED = "assigned", // Currently assigned to someone
   RETURNED = "returned", // Assignment is over, back in inventory
-  RETIRED = "retired", // End of life, out of service
+  DECOMMISSIONED = "decommissioned", // End of life, out of service
 }
 
 interface Result {
@@ -93,11 +103,11 @@ export interface LaptopStore {
   addLaptop: (data: Omit<LaptopDetails, "_id">) => Promise<Result>;
   updateLaptop: (
     serialNumber: string,
-    updates: Partial<LaptopDetails>
+    updates: Partial<LaptopDetails>,
   ) => Promise<Result>;
   retireLaptop: (
     serialNumber: string,
-    retirementNote?: string
+    retirementNote?: string,
   ) => Promise<Result>;
   getRecentActivities: () => RecentActivity[];
   setSelectedLaptop: (laptop: LaptopDetails | null) => void;
@@ -180,8 +190,10 @@ export interface LaptopQRCode {
   status: string;
   currentUser?: LaptopUser | null;
   previousUser?: LaptopUser[];
-  retirementDate?: string;
-  retirementNote?: string;
+  purchaseDate: Date;
+  endOfLifeDate?: Date;
+  decommissionDate?: Date;
+  decommissionNote?: string;
   createdAt: string;
   updatedAt: string;
   scanUrl: string;
@@ -239,11 +251,18 @@ export interface BrandState {
   brand: Brand[];
   loading: boolean;
   error: string | null;
+  selectedBrand: Brand | null;
 
   createBrand: (brandName: string, models: string[]) => Promise<Result>;
   fetchBrands: () => Promise<Result>;
   fetchModelsByBrand: (brandName: string) => Promise<Result>;
   addModelToBrand: (brandName: string, model: string) => Promise<Result>;
+  updateBrand: (brandName: string, newBrandName: string) => Promise<Result>;
+  updateModelInBrand: (
+    brandName: string,
+    model: string,
+    newModel: string,
+  ) => Promise<Result>;
   removeModelFromBrand: (brandName: string, model: string) => Promise<Result>;
   deleteBrand: (brandName: string) => Promise<Result>;
   setBrand: (brands: Brand[]) => void;

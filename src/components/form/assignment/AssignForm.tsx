@@ -1,4 +1,4 @@
-import { FormFieldType } from "@/validation/laptopDetailsvalidation";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type Resolver } from "react-hook-form";
 import {
@@ -23,7 +23,7 @@ import CustomFormField from "@/components/CustomFormField";
 import { useAssignmentStore } from "@/store/useAssignmentStore";
 import { toast } from "react-toastify";
 import { useLaptopStore } from "@/store/useLaptopStore";
-import { departmentOptions } from "@/constants/constants";
+import { departmentOptions, FormFieldType } from "@/constants/constants";
 import { UserPlus } from "lucide-react";
 
 type AssignFormProps = {
@@ -85,7 +85,7 @@ const AssignForm = ({ id }: AssignFormProps) => {
       {loading && <LoadingOverlay />}
 
       <DialogTrigger asChild>
-        <Button className="flex items-center gap-2 bg-transparent text-black dark:text-white hover:text-white hover:bg-indigo-600 transition-colors duration-200 rounded-[50px] px-4 py-2 shadow-sm group">
+        <Button className="flex items-center gap-2 bg-transparent text-black dark:text-white hover:text-white hover:bg-indigo-600 transition-colors duration-200 rounded-[50px] px-4 py-2 shadow-sm group cursor-pointer">
           <UserPlus
             size={16}
             className="text-slate-400 group-hover:text-white transition-colors"
