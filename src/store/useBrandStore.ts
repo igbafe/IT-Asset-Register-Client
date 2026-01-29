@@ -3,7 +3,7 @@ import axiosInstance, { backendUrl } from "@/lib/axiosInstance";
 import axios from "axios";
 import type { BrandState } from "@/types/types";
 
-const useBrandStore = create<BrandState>((set, get) => ({
+const useBrandStore = create<BrandState>((set) => ({
   brand: [],
   loading: false,
   error: null,
