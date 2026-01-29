@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 interface LaptopActionConfirmationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  laptopActionType: "retire" | "return";
+  laptopActionType: "decommission" | "return";
   systemName: string | null;
   onConfirm: () => Promise<void>;
   isLoading: boolean;
@@ -43,13 +43,13 @@ export function LaptopActionConfirmationDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            {laptopActionType === "retire"
-              ? `This will permanently retire the laptop "${systemName}". This action cannot be undone.`
+            {laptopActionType === "decommission"
+              ? `This will permanently decommission the laptop "${systemName}". This action cannot be undone.`
               : `This will return the laptop "${systemName}". This action cannot be undone.`}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        {laptopActionType === "retire" && onRetirementNoteChange && (
+        {laptopActionType === "decommission" && onRetirementNoteChange && (
           <div className="space-y-2">
             <label
               htmlFor="retirement-note"
@@ -75,7 +75,7 @@ export function LaptopActionConfirmationDialog({
             disabled={isLoading}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {laptopActionType === "retire" ? "Retire" : "Return"}
+            {laptopActionType === "decommission" ? "Decommission" : "Return"}
             {isLoading ? "..." : ""}
           </AlertDialogAction>
         </AlertDialogFooter>

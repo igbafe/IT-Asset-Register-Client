@@ -1,5 +1,4 @@
 import CustomFormField from "@/components/CustomFormField";
-import TagsInput from "@/components/tagInput";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,58 +10,69 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { FormFieldType } from "@/constants/constants";
 import useBrandStore from "@/store/useBrandStore";
+import type { Brand } from "@/types/types";
 import {
-  brandModelSchema,
-  type BrandModelFormData,
+  updateBrandSchema,
+  type UpdateBrandFormData,
 } from "@/validation/brandSetting";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+
 import { toast } from "react-toastify";
 
-const CreateBrand = () => {
-  const [open, setOpen] = useState(false);
-  const { createBrand } = useBrandStore();
+interface UpdateBrandNameProps {
+  brand: Brand; // Brand from table row
+}
 
-  const form = useForm<BrandModelFormData>({
-    resolver: zodResolver(brandModelSchema),
+const UpdateBrandName = ({ brand }: UpdateBrandNameProps) => {
+  const [open, setOpen] = useState(false);
+  const { updateBrand } = useBrandStore();
+
+  const form = useForm<UpdateBrandFormData>({
+    resolver: zodResolver(updateBrandSchema),
     defaultValues: {
-      brandName: "",
-      models: [],
+      newBrandName: "",
     },
   });
 
-  const onSubmit = async (values: BrandModelFormData) => {
-    const result = await createBrand(values.brandName, values.models);
+  const onSubmit = async (values: UpdateBrandFormData) => {
+    if (!brand) {
+      toast.error("Brand name is missing");
+      return;
+    }
+
+    const result = await updateBrand(brand.brandName, values.newBrandName);
     if (result.success) {
       form.reset();
       setOpen(false);
-      toast.success(result.message || "Brand created successfully!");
+      toast.success(result.message || "Brand name updated successfully!");
     } else {
-      toast.error(result.error || "Failed to create brand");
+      toast.error(result.error || "Failed to update brand name");
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="bg-indigo-600 hover:bg-indigo-700 rounded-[50px] cursor-pointer text-white px-4 py-2">
-        Add Brand
+      <DialogTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 text-emerald-600 hover:text-emerald-700 cursor-pointer hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950 flex items-center gap-1.5"
+          title="Edit Brand Name"
+        >
+          <Pencil size={14} />
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add New Brand</DialogTitle>
+          <DialogTitle>Update Brand Name</DialogTitle>
           <DialogDescription>
-            Fill in the details below to create a new brand.
+            Fill in the details below to update a brand name.
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto px-6 py-4">
@@ -71,27 +81,9 @@ const CreateBrand = () => {
               <CustomFormField
                 fieldType={FormFieldType.INPUT}
                 control={form.control}
-                name="brandName"
+                name="newBrandName"
                 label="Brand Name"
-                placeholder="Enter brand name"
-              />
-
-              <FormField
-                control={form.control}
-                name="models"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Models</FormLabel>
-                    <FormControl>
-                      <TagsInput
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder="Add model and press Enter"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                placeholder="Enter new brand name"
               />
             </form>
           </Form>
@@ -112,7 +104,7 @@ const CreateBrand = () => {
               onClick={form.handleSubmit(onSubmit)}
               className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white"
             >
-              Save Brand
+              Update Brand
             </Button>
           </div>
         </DialogFooter>
@@ -121,4 +113,4 @@ const CreateBrand = () => {
   );
 };
 
-export default CreateBrand;
+export default UpdateBrandName;

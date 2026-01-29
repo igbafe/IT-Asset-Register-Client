@@ -23,7 +23,6 @@ import {
 import { LaptopStatus } from "@/types/types";
 import type { LaptopQRCode } from "@/types/types";
 import { useLaptopQRStore } from "@/store/useQrcodeStore";
-// import { useNavigate } from "react-router-dom";
 
 type laptopdetailsprops = {
   serialNumber?: string;
@@ -35,7 +34,6 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
   const [open, setOpen] = useState(false);
   const [qrData, setQrData] = useState<LaptopQRCode | null>(null);
   const [loading, setLoading] = useState(false);
-  // const navigate = useNavigate();
 
   useEffect(() => {
     if (!open || !serialNumber) return;
@@ -59,7 +57,7 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
         return "bg-blue-500";
       case LaptopStatus.RETURNED:
         return "bg-yellow-500";
-      case LaptopStatus.RETIRED:
+      case LaptopStatus.DECOMMISSIONED:
         return "bg-red-500";
       default:
         return "bg-gray-400";
@@ -78,8 +76,8 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
   if (!laptop) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh]">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col p-0">
+          <DialogHeader className="px-6 pt-6 pb-4 border-b">
             <DialogTitle>Laptop Not Found</DialogTitle>
             <DialogDescription>
               The laptop with serial number "{serialNumber}" could not be found.
@@ -102,28 +100,33 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
           View More
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
-        {loading && <p>Loading QR Code...</p>}
-        {!loading && qrData && (
-          <>
-            <DialogHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <DialogTitle className="text-2xl">
-                    {laptop.systemName}
-                  </DialogTitle>
-                  <DialogDescription className="mt-1 text-base">
-                    {laptop.brand} {laptop.model}
-                  </DialogDescription>
-                </div>
-                <Badge
-                  className={`${getStatusColor(laptop.status)} text-white mr-4`}
-                >
-                  {laptop.status || "Unknown"}
-                </Badge>
-              </div>
-            </DialogHeader>
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] flex flex-col p-0">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <div className="flex-1">
+              <DialogTitle className="text-2xl">
+                {laptop.systemName}
+              </DialogTitle>
+              <DialogDescription className="mt-1 text-base">
+                {laptop.brand} {laptop.model}
+              </DialogDescription>
+            </div>
+            <Badge
+              className={`${getStatusColor(laptop.status)} text-white`}
+            >
+              {laptop.status || "Unknown"}
+            </Badge>
+          </div>
+        </DialogHeader>
 
+        {loading && (
+          <div className="flex items-center justify-center py-12 px-6">
+            <p>Loading QR Code...</p>
+          </div>
+        )}
+
+        {!loading && qrData && (
+          <div className="flex-1 overflow-y-auto px-6 py-4">
             <div className="space-y-6">
               {/* System Information */}
               <Card>
@@ -134,12 +137,12 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Left Column - Primary Info */}
                     <div className="lg:col-span-2 space-y-6">
-                      <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
                         <div>
                           <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5">
                             Serial Number
                           </p>
-                          <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                          <p className="text-base font-semibold text-gray-900 dark:text-gray-100 break-all">
                             {laptop.serialNumber}
                           </p>
                         </div>
@@ -191,11 +194,27 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
                             {laptop.rom}
                           </p>
                         </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5">
+                            Purchase Date
+                          </p>
+                          <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                            {formatDate(laptop.purchaseDate)}
+                          </p>
+                        </div>
+                        <div className="sm:col-span-2 lg:col-span-1">
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5">
+                            End of Life Date
+                          </p>
+                          <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                            {formatDate(laptop.endOfLifeDate)}
+                          </p>
+                        </div>
                       </div>
                     </div>
 
                     {/* Right Column - QR Code */}
-                    <div className="flex flex-col items-center justify-center gap-4">
+                    <div className="flex flex-col items-center justify-center gap-4 mt-4 lg:mt-0">
                       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
                         <img
                           src={qrData?.qrCode}
@@ -211,16 +230,6 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
                       >
                         Download QR Code
                       </Button>
-                      {/* <Button
-                        onClick={() => {
-                          if (qrData) {
-                            navigate(`/laptops/qr/${qrData.serialNumber}`);
-                          }
-                        }}
-                        className="w-full"
-                      >
-                        Open Scan Page
-                      </Button> */}
                     </div>
                   </div>
                 </CardContent>
@@ -230,43 +239,41 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
               {laptop.currentUser && (
                 <Card>
                   <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg text-blue-900">
-                        Current Assignment
-                      </CardTitle>
-                    </div>
+                    <CardTitle className="text-lg text-blue-900 dark:text-blue-400">
+                      Current User
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      <div className="flex items-center gap-3">
-                        <User className="w-5 h-5 text-blue-600" />
-                        <div className="flex-1">
+                      <div className="flex items-start gap-3">
+                        <User className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                        <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
                             Full Name
                           </p>
-                          <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                          <p className="text-base font-semibold text-gray-900 dark:text-gray-100 break-words">
                             {laptop.currentUser.firstName}{" "}
                             {laptop.currentUser.lastName}
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <Mail className="w-5 h-5 text-blue-600" />
-                        <div className="flex-1">
+                      <div className="flex items-start gap-3">
+                        <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                        <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
                             Email
                           </p>
-                          <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                          <p className="text-base font-semibold text-gray-900 dark:text-gray-100 break-all">
                             {laptop.currentUser.email}
                           </p>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-6">
-                        <div className="flex items-center gap-3">
-                          <Building2 className="w-5 h-5 text-blue-600" />
-                          <div className="flex-1">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <div className="flex items-start gap-3">
+                          <Building2 className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                          <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
                               Department
                             </p>
@@ -276,9 +283,9 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-3">
-                          <Calendar className="w-5 h-5 text-blue-600" />
-                          <div className="flex-1">
+                        <div className="flex items-start gap-3">
+                          <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                          <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
                               Assigned Date
                             </p>
@@ -306,30 +313,30 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
                       {laptop.previousUser.map((user, index) => (
                         <div
                           key={index}
-                          className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors"
+                          className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
                         >
                           <div className="space-y-3">
-                            <div className="flex items-start justify-between">
-                              <div className="flex items-center gap-3 flex-1">
-                                <User className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                                <div>
+                            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                              <div className="flex items-start gap-3 flex-1 min-w-0">
+                                <User className="w-5 h-5 text-gray-600 dark:text-gray-300 mt-0.5 shrink-0" />
+                                <div className="min-w-0 flex-1">
                                   <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
                                     {user.firstName} {user.lastName}
                                   </p>
-                                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                                  <p className="text-sm text-gray-600 dark:text-gray-300 break-all">
                                     {user.email}
                                   </p>
                                 </div>
                               </div>
-                              <Badge variant="outline" className="text-sm">
+                              <Badge variant="outline" className="text-sm w-fit">
                                 {user.department}
                               </Badge>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4 mt-3 pt-3 border-t border-gray-100">
-                              <div className="flex items-center gap-2">
-                                <Calendar className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                                <div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-gray-100 dark:border-gray-700">
+                              <div className="flex items-start gap-2">
+                                <Calendar className="w-4 h-4 text-gray-500 dark:text-gray-400 mt-0.5 shrink-0" />
+                                <div className="min-w-0">
                                   <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
                                     Assigned
                                   </p>
@@ -339,9 +346,9 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
                                 </div>
                               </div>
 
-                              <div className="flex items-center gap-2">
-                                <CalendarClock className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                                <div>
+                              <div className="flex items-start gap-2">
+                                <CalendarClock className="w-4 h-4 text-gray-500 dark:text-gray-400 mt-0.5 shrink-0" />
+                                <div className="min-w-0">
                                   <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
                                     Returned
                                   </p>
@@ -360,37 +367,37 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
               )}
 
               {/* Retirement Information */}
-              {laptop.status === LaptopStatus.RETIRED && (
+              {laptop.status === LaptopStatus.DECOMMISSIONED && (
                 <Card>
                   <CardHeader>
                     <div className="flex items-center gap-2">
                       <AlertCircle className="w-5 h-5 text-red-600" />
                       <CardTitle className="text-lg text-red-500">
-                        Retirement Information
+                        Decommissioned Information
                       </CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      <div className="flex items-center gap-3">
-                        <Calendar className="w-5 h-5 text-red-600" />
-                        <div className="flex-1">
+                      <div className="flex items-start gap-3">
+                        <Calendar className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
+                        <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-red-400">
-                            Retirement Date
+                            Decommissioned Date
                           </p>
                           <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                            {formatDate(laptop.retirementDate)}
+                            {formatDate(laptop.decommissionDate)}
                           </p>
                         </div>
                       </div>
 
-                      {laptop.retirementNote && (
-                        <div className=" rounded-lg p-4 border border-red-200">
+                      {laptop.decommissionNote && (
+                        <div className="rounded-lg p-4 border border-red-200 dark:border-red-800">
                           <p className="text-sm font-medium text-red-400 mb-2">
-                            Retirement Note
+                            Decommissioned Note
                           </p>
-                          <p className="text-base text-gray-900 dark:text-gray-100">
-                            {laptop.retirementNote}
+                          <p className="text-base text-gray-900 dark:text-gray-100 break-words">
+                            {laptop.decommissionNote}
                           </p>
                         </div>
                       )}
@@ -398,32 +405,8 @@ const LaptopDetailsModal = ({ serialNumber }: laptopdetailsprops) => {
                   </CardContent>
                 </Card>
               )}
-
-              {/* Metadata
-          <Card className="bg-gray-50">
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                    Created
-                  </p>
-                  <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                    {formatDate(laptop.createdAt)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                    Last Updated
-                  </p>
-                  <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                    {formatDate(laptop.updatedAt)}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card> */}
             </div>
-          </>
+          </div>
         )}
       </DialogContent>
     </Dialog>

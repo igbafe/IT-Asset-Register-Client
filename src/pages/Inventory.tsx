@@ -1,11 +1,10 @@
-// Inventory.tsx
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Sidebar";
 import { Search } from "lucide-react";
 import { DataTable } from "@/components/table/data-table";
 import { columns } from "@/components/table/laptopDetails/laptopColumns";
 import { useLaptopStore } from "@/store/useLaptopStore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import AddForm from "@/components/form/laptopdetails/AddForm";
 import { UserAvatar } from "@/components/Avatar";
 import { SelectStatus } from "@/components/selectStatus";
@@ -18,23 +17,21 @@ export default function Inventory() {
 
   useEffect(() => {
     fetchLaptops();
-  }, [fetchLaptops]);
+  }, []); 
 
-  const filteredLaptops = laptops.filter((laptop) => {
-    const term = searchTerm.toLowerCase();
+  const filteredLaptops = useMemo(() => {
+    return laptops.filter((laptop) => {
+      const term = searchTerm.toLowerCase();
+      const matchesSearch =
+        laptop.systemName.toLowerCase().includes(term) ||
+        laptop.serialNumber.toLowerCase().includes(term);
 
-    // Search filter
-    const matchesSearch =
-      laptop.systemName.toLowerCase().includes(term) ||
-      laptop.model.toLowerCase().includes(term) ||
-      laptop.serialNumber.toLowerCase().includes(term);
+      const matchesStatus =
+        statusFilter === "all" || laptop.status === statusFilter;
 
-    // Status filter
-    const matchesStatus =
-      statusFilter === "all" || laptop.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
+      return matchesSearch && matchesStatus;
+    });
+  }, [laptops, searchTerm, statusFilter]);
 
   return (
     <SidebarProvider>
@@ -64,7 +61,7 @@ export default function Inventory() {
                   />
                   <input
                     type="text"
-                    placeholder="Search laptops..."
+                    placeholder="Search by Name and SN"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full sm:w-64 border border-gray-300 dark:border-gray-700 rounded-md py-2 pl-9 pr-3 text-sm bg-transparent focus:ring-2 focus:ring-indigo-500 outline-none transition-colors"
@@ -78,8 +75,6 @@ export default function Inventory() {
                 />
               </div>
               <div>
-                {/* Status Filter */}
-
                 <AddForm />
               </div>
             </div>

@@ -1,4 +1,3 @@
-import { FormFieldType } from "@/validation/laptopDetailsvalidation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type Resolver } from "react-hook-form";
 import {
@@ -23,7 +22,7 @@ import {
 import { toast } from "react-toastify";
 import { useAssignmentStore } from "@/store/useAssignmentStore";
 import { useLaptopStore } from "@/store/useLaptopStore";
-import { departmentOptions } from "@/constants/constants";
+import { departmentOptions, FormFieldType } from "@/constants/constants";
 
 type ReassignFormProps = {
   systemName: string;

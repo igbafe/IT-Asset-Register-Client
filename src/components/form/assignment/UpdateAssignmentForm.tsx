@@ -1,4 +1,3 @@
-import { FormFieldType } from "@/validation/laptopDetailsvalidation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type Resolver } from "react-hook-form";
 import {
@@ -9,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger,  
 } from "@/components/ui/dialog";
 
 import {
@@ -25,7 +24,7 @@ import { Form } from "@/components/ui/form";
 import { useAssignmentStore } from "@/store/useAssignmentStore";
 import { useLaptopStore } from "@/store/useLaptopStore";
 import { toast } from "react-toastify";
-import { departmentOptions } from "@/constants/constants";
+import { departmentOptions, FormFieldType } from "@/constants/constants";
 
 const UpdateAssignmentForm = (LaptopId: string) => {
   const { updateCurrentUser, loading } = useAssignmentStore();

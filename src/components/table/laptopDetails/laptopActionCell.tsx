@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { IterationCw, Trash2 } from "lucide-react";
+import { IterationCw, Archive } from "lucide-react";
 import UpdateForm from "@/components/form/laptopdetails/UpdateForm";
 import type { LaptopDetails } from "@/types/types";
 import { useLaptopStore } from "@/store/useLaptopStore";
@@ -19,11 +19,13 @@ export function LaptopActionsCell({ laptop }: LaptopActionsCellProps) {
   const { returnCurrentUser, loading: returnLoading } = useAssignmentStore();
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [actionType, setActionType] = useState<"retire" | "return">("retire");
+  const [actionType, setActionType] = useState<"decommission" | "return">(
+    "decommission",
+  );
   const [retirementNote, setRetirementNote] = useState("");
 
-  const handleRetireClick = () => {
-    setActionType("retire");
+  const handleDecommissionClick = () => {
+    setActionType("decommission");
     setRetirementNote("");
     setDialogOpen(true);
   };
@@ -35,9 +37,11 @@ export function LaptopActionsCell({ laptop }: LaptopActionsCellProps) {
 
   const handleConfirm = async () => {
     try {
-      if (actionType === "retire") {
+      if (actionType === "decommission") {
         await retireLaptop(laptop.serialNumber, retirementNote);
-        toast.success(`${laptop.systemName} has been retired successfully.`);
+        toast.success(
+          `${laptop.systemName} has been decommissioned successfully.`,
+        );
       } else {
         const id = laptop._id;
         if (!id) {
@@ -58,18 +62,19 @@ export function LaptopActionsCell({ laptop }: LaptopActionsCellProps) {
   return (
     <>
       <div className="flex items-center gap-3">
-        {laptop.status === "retired" ? null : (
+        {laptop.status === "decommissioned" ? null : (
           <UpdateForm serialNumber={laptop.serialNumber} />
         )}
 
-        {laptop.status === "retired" ? null : (
+        {laptop.status === "decommissioned" ? null : (
           <Button
             variant="outline"
             size="sm"
-            onClick={handleRetireClick}
+            onClick={handleDecommissionClick}
             className="flex items-center gap-1 cursor-pointer"
+            title="Decommission Laptop"
           >
-            <Trash2 size={14} />
+            <Archive size={14} />
           </Button>
         )}
 
@@ -97,7 +102,7 @@ export function LaptopActionsCell({ laptop }: LaptopActionsCellProps) {
         laptopActionType={actionType}
         systemName={laptop.systemName}
         onConfirm={handleConfirm}
-        isLoading={actionType === "retire" ? loading : returnLoading}
+        isLoading={actionType === "decommission" ? loading : returnLoading}
         retirementNote={retirementNote}
         onRetirementNoteChange={setRetirementNote}
       />

@@ -1,6 +1,5 @@
 import { useLaptopStore } from "@/store/useLaptopStore";
 import {
-  FormFieldType,
   UpdateDetailsSchema,
   type UpdateDetailsFormData,
 } from "@/validation/laptopDetailsvalidation";
@@ -23,7 +22,7 @@ import { Pencil } from "lucide-react";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "@/components/CustomFormField";
 import { toast } from "react-toastify";
-import { osOptions, ramOptions, romOptions } from "@/constants/constants";
+import { FormFieldType, osOptions, ramOptions, romOptions } from "@/constants/constants";
 import useBrandStore from "@/store/useBrandStore";
 
 type UpdateFormProps = {
@@ -116,6 +115,7 @@ const UpdateForm = ({ serialNumber }: UpdateFormProps) => {
           variant="ghost"
           size="sm"
           className="h-8 text-emerald-600 hover:text-emerald-700 cursor-pointer hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950 flex items-center gap-1.5"
+          title="Edit Laptop"
         >
           <Pencil size={14} />
         </Button>

@@ -17,8 +17,8 @@ export default function LaptopDashboard() {
 
   const assignedCount =
     laptops?.filter((l) => l.status === "assigned").length || 0;
-  const retiredCount =
-    laptops?.filter((l) => l.status === "retired").length || 0;
+  const decommissionedCount =
+    laptops?.filter((l) => l.status === "decommissioned").length || 0;
   const availableCount =
     laptops?.filter((l) => l.status === "available").length || 0;
   const totalLaptops = laptops?.length || 0;
@@ -57,7 +57,7 @@ export default function LaptopDashboard() {
                   totalLaptops={totalLaptops}
                   assignedCount={assignedCount}
                   availableCount={availableCount}
-                  retiredCount={retiredCount}
+                  decommissionedCount={decommissionedCount}
                 />
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -65,7 +65,7 @@ export default function LaptopDashboard() {
                   <QuickStatsCard
                     assignedCount={assignedCount}
                     availableCount={availableCount}
-                    retiredCount={retiredCount}
+                    decommissionedCount={decommissionedCount}
                     totalLaptops={totalLaptops}
                   />
                 </div>
