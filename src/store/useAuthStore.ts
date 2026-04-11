@@ -12,7 +12,6 @@ export const useAuthStore = create<AuthState>()(
       error: null,
 
       checkAuth: async () => {
-        set({ loading: true });
         try {
           const { data } = await axiosInstance.get("/user/profile");
           set({ user: data.user, loading: false });
